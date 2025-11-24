@@ -4,150 +4,40 @@
 <meta charset="UTF-8" />
 <title>Malla Interactiva — Administración de Empresas</title>
 <style>
-    :root{
-        --rosa:#ffd9ec;
-        --rosa2:#ffecf6;
-        --rosa3:#ffb3d9;
-        --gris:#ddd;
-        --verde:#c8f7cf;
-        --amarillo:#fff4bd;
-        --libre:#ffd1d1;
-        --card:#ffeaf4;
-        --shadow:0 4px 14px rgba(0,0,0,.08);
-        --radius:14px;
-    }
-    body{
-        margin:0;
-        font-family: "Segoe UI", sans-serif;
-        background:var(--rosa2);
-        overflow-x:auto;
-    }
-    h1{
-        text-align:center;
-        padding:20px;
-        color:#b4166e;
-    }
-    #progressBarContainer{
-        width:90%;
-        margin:0 auto 20px auto;
-        background:#fff;
-        padding:10px;
-        border-radius:var(--radius);
-        box-shadow:var(--shadow);
-    }
-    #progressBar{
-        height:22px;
-        background:var(--rosa3);
-        width:0%;
-        border-radius:var(--radius);
-        transition:width .4s ease;
-    }
-    #progressLabel{
-        text-align:center;
-        font-weight:600;
-        margin-top:6px;
-    }
-    .wrap{
-        display:flex;
-        gap:20px;
-        padding:20px;
-        overflow:visible !important;
-    }
-    .column{
-        min-width:260px;
-        background:var(--card);
-        border-radius:var(--radius);
-        padding:14px;
-        box-shadow:var(--shadow);
-        flex:0 0 auto;
-        position:relative;
-        z-index:1;
-        overflow:visible !important;
-    }
-    .materia{
-        background:#fff;
-        border-radius:var(--radius);
-        padding:12px;
-        margin-bottom:12px;
-        position:relative;
-        cursor:pointer;
-        box-shadow:var(--shadow);
-        transition:transform .2s ease;
-    }
-    .materia:hover{
-        transform:scale(1.02);
-    }
-    .bloqueada{
-        background:#f3d7e3;
-        opacity:0.6;
-        cursor:not-allowed;
-    }
-    .promocion{
-        background:var(--verde) !important;
-    }
-    .regular{
-        background:var(--amarillo) !important;
-    }
-    .libre{
-        background:var(--libre) !important;
-    }
-    .disponible{
-        background:#f8e3ff !important;
-    }
-    .tooltip{
-        position:absolute;
-        left:calc(100% + 12px);
-        top:6px;
-        width:260px;
-        background:var(--rosa2);
-        padding:10px;
-        border-radius:var(--radius);
-        box-shadow:var(--shadow);
-        display:none;
-        z-index:999999 !important;
-        font-size:13px;
-    }
-    .materia:hover .tooltip{
-        display:block;
-    }
-    /* Mascota */
-    #negro{
-        position:fixed;
-        bottom:40px;
-        left:0;
-        width:80px;
-        height:auto;
-        image-rendering:pixelated;
-        animation:caminar 6s linear infinite;
-        z-index:9999;
-    }
-    @keyframes caminar{
-        0%{left:-100px;}
-        50%{left:calc(100% + 100px);} 
-        100%{left:-100px;} 
-    }
-    /* Nota */
-    .notaBox{
-        margin-top:8px;
-        background:#fff;
-        padding:6px;
-        border-radius:10px;
-        font-size:13px;
-        border:1px solid #eee;
-    }
+:root{
+ --rosa:#ffd9ec; --rosa2:#ffecf6; --rosa3:#ffb3d9; --gris:#ddd;
+ --verde:#c8f7cf; --amarillo:#fff4bd; --libre:#ffd1d1;
+ --card:#ffeaf4; --shadow:0 4px 14px rgba(0,0,0,.08); --radius:14px;
+}
+body{margin:0;font-family:"Segoe UI",sans-serif;background:var(--rosa2);overflow-x:auto;}
+h1{text-align:center;padding:20px;color:#b4166e;}
+#progressBarContainer{width:90%;margin:0 auto 20px;background:#fff;padding:10px;border-radius:var(--radius);box-shadow:var(--shadow);}
+#progressBar{height:22px;background:var(--rosa3);width:0%;border-radius:var(--radius);transition:width .4s;}
+#progressLabel{text-align:center;font-weight:600;margin-top:6px;}
+.wrap{display:flex;gap:20px;padding:20px;overflow:visible!important;}
+.column{min-width:260px;background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);position:relative;z-index:1;overflow:visible!important;}
+h3{margin:0 0 10px;background:#f7cce3;padding:10px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow);}
+.contenidoColumn{display:none;}
+.materia{background:#fff;border-radius:var(--radius);padding:12px;margin-bottom:12px;position:relative;cursor:pointer;box-shadow:var(--shadow);transition:transform .2s;}
+.materia:hover{transform:scale(1.02);} 
+.bloqueada{background:#f3d7e3;opacity:.6;cursor:not-allowed;}
+.promocion{background:var(--verde)!important;}
+.regular{background:var(--amarillo)!important;}
+.libre{background:var(--libre)!important;}
+.disponible{background:#f8e3ff!important;}
+.tooltip{position:absolute;left:calc(100% + 12px);top:6px;width:260px;background:var(--rosa2);padding:10px;border-radius:var(--radius);box-shadow:var(--shadow);display:none;font-size:13px;z-index:999999!important;}
+.materia:hover .tooltip{display:block;}
+#negro{position:fixed;bottom:40px;left:-80px;width:80px;image-rendering:pixelated;animation:walk 8s linear infinite;z-index:9999;}
+@keyframes walk{0%{left:-100px;}50%{left:calc(100% + 100px);}100%{left:-100px;}}
+.notaBox{margin-top:8px;background:#fff;padding:6px;border-radius:10px;font-size:13px;border:1px solid #eee;}
 </style>
 </head>
 <body>
 <h1>Malla Interactiva — Administración de Empresas</h1>
-<div id="progressBarContainer">
-    <div id="progressBar"></div>
-    <div id="progressLabel">Avance: 0%</div>
-</div>
-<img id="negro" src="data:image/png;base64,{BASE64_REPLACE}" />
+<div id="progressBarContainer"><div id="progressBar"></div><div id="progressLabel">Avance: 0%</div></div>
+<img id="negro" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAABTUlEQVR4nO3aMQ7CMAwF0On//2c2AQm2PahnYDsRedQj6DFbnczFqqpwBqvBfZCxQLFvCkknJ/fuHYBS6lt2XgM8mwo4Q+0Vcp88BgADcOfPRA+jtvE2lWBVYHLwBtHNAZwF9blYgq0EDUQCtRAK1EArUQCtRAK1EArUQCtRAK1EArUQCtRAK1EB/AHbbKfa9+F5Tj94wAK0ECtRAK1EArUQCtRAK1EArUQCtRAK1EArUQCtRAK1EArUQD8CXwAfXQzNvR05u9YbF8BtsB1ZsC7hqs9dQ4O1eHQ8CdgCnoA74iqw27H0FfS/bNsQ9cSuTMAAAAASUVORK5CYII=" />
 <div class="wrap" id="contenedor"></div>
 <script>
-// ---- DATA ----
-// Plan completo
 const materias=[
  {ciclo:"Ciclo de Nivelación", materias:[
    {nombre:"Área Matemática", req:[]},
@@ -170,11 +60,7 @@ const materias=[
    {nombre:"Estadística I", req:["Análisis Matemático"]},
    {nombre:"Derecho Constitucional y Administrativo", req:["Derecho Privado I"]},
    {nombre:"Área Integrada II", req:[
-      "Principios de Administración y Organización",
-      "Contabilidad Básica",
-      "Álgebra",
-      "Problemática Filosófica y Met. de las Ciencias",
-      "Microeconomía I"
+     "Principios de Administración y Organización","Contabilidad Básica","Álgebra","Problemática Filosófica y Met. de las Ciencias","Microeconomía I"
    ]}
  ]},
  {ciclo:"Tercer Año", materias:[
@@ -198,8 +84,8 @@ const materias=[
    {nombre:"Formación Tributaria", req:["Finanzas Públicas","Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"]},
    {nombre:"Administración Financiera", req:["Matemática Financiera","Análisis de Estados Contables"]},
    {nombre:"Área Integrada III", req:[
-      "Derecho Privado I","Contabilidad Superior","Área Integrada II","Administración Estratégica",
-      "Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"
+     "Derecho Privado I","Contabilidad Superior","Área Integrada II","Administración Estratégica",
+     "Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"
    ]}
  ]},
  {ciclo:"Quinto Año", materias:[
@@ -209,116 +95,5 @@ const materias=[
    {nombre:"Evaluación de Proyectos", req:["Economía Aplicada","Administración Financiera"]},
    {nombre:"Administración de la Producción", req:["Comercialización I"]},
    {nombre:"Área Integrada IV", req:[
-      "Comercialización I","Área Integrada III","Administración Estratégica","Administración Financiera",
-      "Análisis de Estados Contables","Derecho Empresario","Economía Aplicada","Estadística II",
-      "Finanzas Públicas","Formación Tributaria","Historia y Recursos Económicos","Psicología y Sociología Organizacional","Sistemas Administrativos"
-   ]},
-   {nombre:"Dirección y Gestión Empresaria", req:["Área Integrada III","Administración de Personal"]}
- ]},
- {ciclo:"Requisitos Extracurriculares", materias:[
-   {nombre:"Informática (LA801-807)", req:[]},
-   {nombre:"Inglés (Lectura Comprensiva)", req:[]},
-   {nombre:"Portugués (Lectura Comprensiva)", req:[]}
- ]}
-];
-
-// ---- ESTADOS ----
-const estados=["promocion","regular","libre","disponible"]; // rotación
-
-function crearMalla(){
-  const cont=document.getElementById("contenedor");
-  cont.innerHTML="";
-
-  materias.forEach(col=>{
-    const c=document.createElement("div");
-    c.className="column";
-    const title=document.createElement("h3");
-    title.textContent=col.ciclo;
-    c.appendChild(title);
-
-    col.materias.forEach(m=>{
-      const card=document.createElement("div");
-      card.className="materia";
-      card.dataset.nombre=m.nombre;
-      card.dataset.req=JSON.stringify(m.req);
-
-      card.innerHTML=`${m.nombre}
-        <div class='notaBox'>Nota: <input type="number" min="1" max="10" style="width:40px"></div>
-        <div class='tooltip'>Correlativas: ${m.req.join(", ")||"Ninguna"}</div>`;
-
-      card.addEventListener('click',()=> cambiarEstado(card));
-
-      c.appendChild(card);
-    });
-
-    cont.appendChild(c);
-  });
-
-  cargarProgreso();
-  actualizarBloqueos();
-  actualizarProgreso();
-}
-
-function cambiarEstado(card){
-  if(card.classList.contains("bloqueada")) return;
-  let index=estados.findIndex(s=>card.classList.contains(s));
-  estados.forEach(s=>card.classList.remove(s));
-  index=(index+1)%estados.length;
-  card.classList.add(estados[index]);
-
-  guardarProgreso();
-  actualizarBloqueos();
-  actualizarProgreso();
-}
-
-function actualizarBloqueos(){
-  const cards=document.querySelectorAll('.materia');
-
-  cards.forEach(card=>{
-    const req=JSON.parse(card.dataset.req);
-    const aprobadas=[...cards].filter(c=>c.classList.contains('promocion')).map(c=>c.dataset.nombre);
-
-    const cumple=req.every(r=>aprobadas.includes(r));
-
-    if(!cumple){
-      card.classList.add('bloqueada');
-    } else{
-      card.classList.remove('bloqueada');
-    }
-  });
-}
-
-function guardarProgreso(){
-  const data=[...document.querySelectorAll('.materia')].map(c=>({
-    nombre:c.dataset.nombre,
-    estado:estados.find(s=>c.classList.contains(s))||"",
-    nota:c.querySelector('input').value
-  }));
-  localStorage.setItem('progresoAE',JSON.stringify(data));
-}
-
-function cargarProgreso(){
-  const saved=JSON.parse(localStorage.getItem('progresoAE')||"[]");
-  saved.forEach(s=>{
-    const card=document.querySelector(`.materia[data-nombre='${s.nombre}']`);
-    if(card){
-      if(s.estado) card.classList.add(s.estado);
-      card.querySelector('input').value=s.nota;
-    }
-  });
-}
-
-function actualizarProgreso(){
-  const cards=[...document.querySelectorAll('.materia')];
-  const total=cards.length;
-  const promo=cards.filter(c=>c.classList.contains('promocion')).length;
-  const pct=Math.round((promo/total)*100);
-
-  document.getElementById("progressBar").style.width=pct+"%";
-  document.getElementById("progressLabel").textContent=`Avance: ${pct}%`;
-}
-
-crearMalla();
-</script>
-</body>
-</html>
+     "Comercialización I","Área Integrada III","Administración Estratégica","Administración Financiera",
+     "Análisis de Estados Contables","Derecho Empresario","Economía Aplicada","Estadística II",
