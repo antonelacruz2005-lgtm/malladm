@@ -1,452 +1,324 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
 <title>Malla Interactiva — Administración de Empresas</title>
 <style>
-  :root{
-    --bg:#FFF6F8;
-    --card:#FFFFFF;
-    --accent:#FDE2E4;
-    --accent-2:#F8C8DC;
-    --text:#2b1720;
-    --muted:#6b5960;
-    --ok:#2aa67a;
-    --warn:#f0b429;
-    --libre:#f28fa1;
-    --shadow:0 10px 30px rgba(37,20,24,0.06);
-    --radius:12px;
-    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
-  }
-
-  html,body{height:100%;margin:0;padding:20px;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text)}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  h1{font-size:18px;margin:0}
-  .subtitle{color:var(--muted);font-size:13px}
-  .controls{display:flex;gap:8px;align-items:center}
-
-  button{background:var(--accent-2);border:0;padding:8px 12px;border-radius:10px;cursor:pointer;color:#fff}
-  button.ghost{background:transparent;color:var(--text);border:1px solid rgba(0,0,0,0.06);padding:8px 10px}
-  input[type="file"]{display:none}
-
-  .searchWrap{display:flex;gap:8px;align-items:center;background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:12px}
-  .search{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);min-width:320px}
-  .small{font-size:13px;color:var(--muted)}
-
-  /* grid layout */
-  .wrap{display:flex;gap:16px;overflow:visible;padding-bottom:14px} /* overflow visible to allow tooltips outside */
-  .column{
-    min-width:240px;background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);
-    flex:0 0 260px;
-    position: relative; z-index:1; overflow: visible !important; /* CRITICAL for tooltip visibility */
-  }
-  .column h2{margin:0 0 10px 0;font-size:14px;color:#4a2730}
-  .grid{display:flex;flex-direction:column;gap:10px}
-
-  /* subject */
-  .subject{
-    display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;
-    background:linear-gradient(180deg,#fff,#fff);border:1px solid rgba(37,20,24,0.04);
-    transition: transform .14s ease, box-shadow .14s ease, background .18s; position:relative; cursor:pointer;
-  }
-  .subject:hover{ transform: translateY(-4px); box-shadow: 0 12px 28px rgba(37,20,24,0.06); }
-  .subject.locked{ opacity:0.75; filter:grayscale(.02); cursor:default; transform:none; box-shadow:none; }
-  .subject .left{display:flex;align-items:center;gap:10px;min-width:0}
-  .subject .name{ font-weight:700; font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .subject .meta{ font-size:12px; color:var(--muted); min-width:92px; text-align:right; }
-
-  .badge-state{ margin-left:8px;padding:4px 8px;border-radius:999px;font-size:12px;color:white;font-weight:700;cursor:pointer;border:0 }
-  .badge-prom{ background:var(--ok) }
-  .badge-reg{ background:var(--warn); color:#4a2b00 }
-  .badge-lib{ background:var(--libre); color:#4a0b1b }
-
-  .subject.approved{ border-left:6px solid var(--ok); background: linear-gradient(180deg,#fffaf8,#fff) }
-
-  /* tooltip: ensure highest stacking */
-  .tooltip{
-    position:absolute; left:calc(100% + 12px); top:6px; width:360px;
-    background: linear-gradient(180deg,#ffeef6,#ffdff0);
-    color:#2b0b15; padding:10px; border-radius:10px; font-size:13px;
-    box-shadow:0 10px 30px rgba(37,20,24,0.08); display:none;
-    z-index:2147483647 !important; /* max safe z-index to ensure visibility */
-    border:1px solid rgba(0,0,0,0.04)
-  }
-  .tooltip b{display:block;margin-bottom:6px}
-  .subject.locked:hover .tooltip{ display:block }
-
-  @keyframes pop {0%{transform:scale(.94);opacity:0}40%{transform:scale(1.10);opacity:1}100%{transform:scale(1);opacity:1}}
-  .pop{animation:pop .38s cubic-bezier(.2,.9,.2,1);box-shadow:0 14px 34px rgba(37,20,24,0.08) !important}
-
-  /* mascot pixel art container */
-  .mascot{
-    position:fixed; left:10px; bottom:40px; width:96px; height:96px; z-index:120; pointer-events:auto;
-    display:flex; align-items:center; justify-content:center;
-  }
-  /* pixel-art will be inline SVG with image-rendering style */
-  .mascot svg{ width:96px; height:96px; image-rendering: pixelated; }
-
-  /* responsive */
-  @media (max-width:880px){
-    .wrap{gap:12px}
-    .column{min-width:220px}
-    .tooltip{display:none}
-    .mascot{display:none}
-  }
-
-  /* small utilities */
-  .controls .small{min-width:140px;text-align:right}
+    :root{
+        --rosa:#ffd9ec;
+        --rosa2:#ffecf6;
+        --rosa3:#ffb3d9;
+        --gris:#ddd;
+        --verde:#c8f7cf;
+        --amarillo:#fff4bd;
+        --libre:#ffd1d1;
+        --card:#ffeaf4;
+        --shadow:0 4px 14px rgba(0,0,0,.08);
+        --radius:14px;
+    }
+    body{
+        margin:0;
+        font-family: "Segoe UI", sans-serif;
+        background:var(--rosa2);
+        overflow-x:auto;
+    }
+    h1{
+        text-align:center;
+        padding:20px;
+        color:#b4166e;
+    }
+    #progressBarContainer{
+        width:90%;
+        margin:0 auto 20px auto;
+        background:#fff;
+        padding:10px;
+        border-radius:var(--radius);
+        box-shadow:var(--shadow);
+    }
+    #progressBar{
+        height:22px;
+        background:var(--rosa3);
+        width:0%;
+        border-radius:var(--radius);
+        transition:width .4s ease;
+    }
+    #progressLabel{
+        text-align:center;
+        font-weight:600;
+        margin-top:6px;
+    }
+    .wrap{
+        display:flex;
+        gap:20px;
+        padding:20px;
+        overflow:visible !important;
+    }
+    .column{
+        min-width:260px;
+        background:var(--card);
+        border-radius:var(--radius);
+        padding:14px;
+        box-shadow:var(--shadow);
+        flex:0 0 auto;
+        position:relative;
+        z-index:1;
+        overflow:visible !important;
+    }
+    .materia{
+        background:#fff;
+        border-radius:var(--radius);
+        padding:12px;
+        margin-bottom:12px;
+        position:relative;
+        cursor:pointer;
+        box-shadow:var(--shadow);
+        transition:transform .2s ease;
+    }
+    .materia:hover{
+        transform:scale(1.02);
+    }
+    .bloqueada{
+        background:#f3d7e3;
+        opacity:0.6;
+        cursor:not-allowed;
+    }
+    .promocion{
+        background:var(--verde) !important;
+    }
+    .regular{
+        background:var(--amarillo) !important;
+    }
+    .libre{
+        background:var(--libre) !important;
+    }
+    .disponible{
+        background:#f8e3ff !important;
+    }
+    .tooltip{
+        position:absolute;
+        left:calc(100% + 12px);
+        top:6px;
+        width:260px;
+        background:var(--rosa2);
+        padding:10px;
+        border-radius:var(--radius);
+        box-shadow:var(--shadow);
+        display:none;
+        z-index:999999 !important;
+        font-size:13px;
+    }
+    .materia:hover .tooltip{
+        display:block;
+    }
+    /* Mascota */
+    #negro{
+        position:fixed;
+        bottom:40px;
+        left:0;
+        width:80px;
+        height:auto;
+        image-rendering:pixelated;
+        animation:caminar 6s linear infinite;
+        z-index:9999;
+    }
+    @keyframes caminar{
+        0%{left:-100px;}
+        50%{left:calc(100% + 100px);} 
+        100%{left:-100px;} 
+    }
+    /* Nota */
+    .notaBox{
+        margin-top:8px;
+        background:#fff;
+        padding:6px;
+        border-radius:10px;
+        font-size:13px;
+        border:1px solid #eee;
+    }
 </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>Malla Interactiva — Administración de Empresas</h1>
-    <div class="subtitle">Progreso local — tema rosa</div>
-  </div>
-  <div class="controls">
-    <div class="small" id="statusSummary">Cargando...</div>
-    <button id="exportBtn">Exportar</button>
-    <label for="importFile" class="ghost" style="padding:8px 10px;border-radius:10px;cursor:pointer">Importar</label>
-    <input type="file" id="importFile" accept="application/json">
-    <button id="resetBtn" class="ghost">Reiniciar</button>
-  </div>
-</header>
-
-<section class="searchWrap">
-  <input id="searchInput" class="search" placeholder="Buscar materia por nombre..." aria-label="Buscar materias">
-  <div class="small" style="min-width:120px;text-align:right">Visibles: <span id="filterCount">—</span></div>
-</section>
-
-<main>
-  <div class="wrap" id="wrap">
-    <div class="column" id="col0"><h2>Nivelación</h2><div class="grid" id="grid0"></div></div>
-    <div class="column" id="col1"><h2>1er Año</h2><div class="grid" id="grid1"></div></div>
-    <div class="column" id="col2"><h2>2do Año</h2><div class="grid" id="grid2"></div></div>
-    <div class="column" id="col3"><h2>3er Año</h2><div class="grid" id="grid3"></div></div>
-    <div class="column" id="col4"><h2>4to Año</h2><div class="grid" id="grid4"></div></div>
-    <div class="column" id="col5"><h2>5to Año</h2><div class="grid" id="grid5"></div></div>
-    <div class="column" id="col6"><h2>Extracurriculares</h2><div class="grid" id="grid6"></div></div>
-  </div>
-  <div style="margin-top:10px" class="small">Nota: Clic izquierdo marca/desmarca <strong>Promoción</strong>. Badge lateral permite elegir Promoción/Regular/Libre. Ctrl/Cmd+clic fuerza cambio.</div>
-</main>
-
-<!-- Mascota pixel art — generada en SVG inline -->
-<div class="mascot" id="mascot" title="Negro, tu mascotita">
-  <!-- Pixel cat: 16x16 grid scaled up -->
-  <svg id="mascotSVG" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <!-- Background transparent -->
-    <!-- We draw a simple pixel cat (black) with small pink ears and eyes -->
-    <!-- row by row (y from 0 to 15) using rects -->
-    <!-- Body and head -->
-    <rect x="4" y="1" width="8" height="1" fill="#0b0b0b"/>
-    <rect x="3" y="2" width="10" height="1" fill="#0b0b0b"/>
-    <rect x="2" y="3" width="12" height="1" fill="#0b0b0b"/>
-    <rect x="2" y="4" width="12" height="6" fill="#0b0b0b"/>
-    <rect x="3" y="10" width="3" height="2" fill="#0b0b0b"/>
-    <rect x="10" y="10" width="3" height="2" fill="#0b0b0b"/>
-    <!-- eyes -->
-    <rect x="5" y="5" width="1" height="1" fill="#ffd880"/>
-    <rect x="10" y="5" width="1" height="1" fill="#ffd880"/>
-    <!-- nose -->
-    <rect x="8" y="7" width="1" height="1" fill="#ff9fb2"/>
-    <!-- ears (pink inner) -->
-    <rect x="3" y="1" width="1" height="1" fill="#ff9fb2"/>
-    <rect x="12" y="1" width="1" height="1" fill="#ff9fb2"/>
-    <!-- tail (simple) -->
-    <rect x="13" y="6" width="1" height="4" fill="#0b0b0b"/>
-    <rect x="14" y="7" width="1" height="2" fill="#0b0b0b"/>
-  </svg>
+<h1>Malla Interactiva — Administración de Empresas</h1>
+<div id="progressBarContainer">
+    <div id="progressBar"></div>
+    <div id="progressLabel">Avance: 0%</div>
 </div>
-
+<img id="negro" src="data:image/png;base64,{BASE64_REPLACE}" />
+<div class="wrap" id="contenedor"></div>
 <script>
-/* Full working single-file script
-   - States: promocion / regular / libre / none
-   - Promocion counts as approved for correlativities
-   - Tooltips fixed with high z-index and overflow visible
-   - Mascot walks horizontally and reacts on unlock
-*/
-
-const STORAGE_KEY = 'malla_interactiva_admin_empresas_v1_states';
-
-/* Subjects data */
-const subjects = [
-  {id:'LA001', name:'Área Matemática', req:[]},
-  {id:'LA002', name:'Área Integrada I', req:[]},
-
-  {id:'LA101', name:'Problemática Filosófica y Metodología de las Ciencias', req:['LA002']},
-  {id:'LA102', name:'Álgebra', req:['LA001']},
-  {id:'LA103', name:'Contabilidad Básica', req:['LA002']},
-  {id:'LA104', name:'Principios de Administración y Organización', req:['LA002']},
-  {id:'LA105', name:'Análisis Matemático', req:['LA102']},
-  {id:'LA106', name:'Microeconomía I', req:['LA102']},
-
-  {id:'LA201', name:'Derecho Privado I', req:['LA002','LA001']},
-  {id:'LA202', name:'Administración', req:['LA104']},
-  {id:'LA203', name:'Contabilidad Superior', req:['LA103']},
-  {id:'LA204', name:'Matemática Financiera', req:['LA106']},
-  {id:'LA205', name:'Macroeconomía I', req:['LA106']},
-  {id:'LA206', name:'Estadística I', req:['LA105']},
-  {id:'LA207', name:'Derecho Constitucional y Administrativo', req:['LA201']},
-  {id:'LA208', name:'Área Integrada II', req:['LA101','LA102','LA103','LA104','LA106']},
-
-  {id:'OPT02', name:'Créditos para Optativas (2)', req:[]},
-  {id:'LA810', name:'Idioma Inglés (Lectura comprensiva)', req:[], minApproved:13},
-  {id:'LA811', name:'Idioma Portugués (Lectura comprensiva)', req:[], minApproved:13},
-  {id:'LA301', name:'Sistemas Administrativos', req:['LA202']},
-  {id:'LA302', name:'Finanzas Públicas', req:['LA205','LA207']},
-  {id:'LA303', name:'Estadística II', req:['LA206']},
-  {id:'LA304', name:'Administración Estratégica', req:['LA301']},
-  {id:'LA305', name:'Economía Aplicada', req:['LA205']},
-  {id:'LA306', name:'Historia y Recursos Económicos', req:['LA001','LA002','LA205']},
-  {id:'LA307', name:'Derecho Empresario', req:['LA201']},
-
-  {id:'LA401', name:'Psicología y Sociología Organizacional', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA402', name:'Investigación Operativa', req:['LA303','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA403', name:'Costos para la Toma de Decisiones', req:['LA203','LA204','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA404', name:'Análisis de Estados Contables', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA405', name:'Comercialización I', req:['LA304','LA402']},
-  {id:'LA406', name:'Formación Tributaria', req:['LA302','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA407', name:'Administración Financiera', req:['LA204','LA404']},
-  {id:'LA408', name:'Área Integrada III', req:['LA201','LA203','LA208','LA304','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-
-  {id:'LA501', name:'Comercialización II', req:['LA405']},
-  {id:'LA502', name:'Administración de Personal', req:['LA401']},
-  {id:'LA503', name:'Derecho Laboral y de la Seguridad Social', req:['LA207','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA504', name:'Evaluación de Proyectos', req:['LA305','LA407']},
-  {id:'LA505', name:'Administración de la Producción', req:['LA405']},
-  {id:'LA506', name:'Área Integrada IV', req:['LA405','LA408','LA304','LA407','LA404','LA307','LA305','LA303','LA302','LA406','LA306','LA401','LA301']},
-  {id:'LA507', name:'Dirección y Gestión Empresaria', req:['LA408','LA502']},
-
-  {id:'LA801', name:'Introducción a la Informática (Módulo A)', req:[]},
-  {id:'LA802', name:'Entorno Operativo Gráfico (Módulo B)', req:[]},
-  {id:'LA803', name:'Planilla de Cálculo Básico (Módulo C)', req:[]},
-  {id:'LA805', name:'Procesador de Texto (Módulo E)', req:[]},
-  {id:'LA807', name:'Redes: Internet e Intranet – Seguridad Informática (Módulo G)', req:[]}
+// ---- DATA ----
+// Plan completo
+const materias=[
+ {ciclo:"Ciclo de Nivelación", materias:[
+   {nombre:"Área Matemática", req:[]},
+   {nombre:"Área Integrada I", req:[]}
+ ]},
+ {ciclo:"Primer Año", materias:[
+   {nombre:"Problemática Filosófica y Met. de las Ciencias", req:["Área Integrada I"]},
+   {nombre:"Álgebra", req:["Área Matemática"]},
+   {nombre:"Contabilidad Básica", req:["Área Integrada I"]},
+   {nombre:"Principios de Administración y Organización", req:["Área Integrada I"]},
+   {nombre:"Análisis Matemático", req:["Álgebra"]},
+   {nombre:"Microeconomía I", req:["Álgebra"]}
+ ]},
+ {ciclo:"Segundo Año", materias:[
+   {nombre:"Derecho Privado I", req:["Área Integrada I","Área Matemática"]},
+   {nombre:"Administración", req:["Principios de Administración y Organización"]},
+   {nombre:"Contabilidad Superior", req:["Contabilidad Básica"]},
+   {nombre:"Matemática Financiera", req:["Microeconomía I"]},
+   {nombre:"Macroeconomía I", req:["Microeconomía I"]},
+   {nombre:"Estadística I", req:["Análisis Matemático"]},
+   {nombre:"Derecho Constitucional y Administrativo", req:["Derecho Privado I"]},
+   {nombre:"Área Integrada II", req:[
+      "Principios de Administración y Organización",
+      "Contabilidad Básica",
+      "Álgebra",
+      "Problemática Filosófica y Met. de las Ciencias",
+      "Microeconomía I"
+   ]}
+ ]},
+ {ciclo:"Tercer Año", materias:[
+   {nombre:"Créditos para Optativas (2)", req:[]},
+   {nombre:"Idioma Inglés", req:["13 materias aprobadas"]},
+   {nombre:"Idioma Portugués", req:["13 materias aprobadas"]},
+   {nombre:"Sistemas Administrativos", req:["Administración"]},
+   {nombre:"Finanzas Públicas", req:["Macroeconomía I","Derecho Constitucional y Administrativo"]},
+   {nombre:"Estadística II", req:["Estadística I"]},
+   {nombre:"Administración Estratégica", req:["Sistemas Administrativos"]},
+   {nombre:"Economía Aplicada", req:["Macroeconomía I"]},
+   {nombre:"Historia y Recursos Económicos", req:["Área Matemática","Área Integrada I","Macroeconomía I"]},
+   {nombre:"Derecho Empresario", req:["Derecho Privado I"]}
+ ]},
+ {ciclo:"Cuarto Año", materias:[
+   {nombre:"Psicología y Sociología Organizacional", req:["Área Integrada II","Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"]},
+   {nombre:"Investigación Operativa", req:["Estadística II","Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"]},
+   {nombre:"Costos para la Toma de Decisiones", req:["Contabilidad Superior","Matemática Financiera","Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"]},
+   {nombre:"Análisis de Estados Contables", req:["Área Integrada II","Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"]},
+   {nombre:"Comercialización I", req:["Administración Estratégica","Investigación Operativa"]},
+   {nombre:"Formación Tributaria", req:["Finanzas Públicas","Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"]},
+   {nombre:"Administración Financiera", req:["Matemática Financiera","Análisis de Estados Contables"]},
+   {nombre:"Área Integrada III", req:[
+      "Derecho Privado I","Contabilidad Superior","Área Integrada II","Administración Estratégica",
+      "Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"
+   ]}
+ ]},
+ {ciclo:"Quinto Año", materias:[
+   {nombre:"Comercialización II", req:["Comercialización I"]},
+   {nombre:"Administración de Personal", req:["Psicología y Sociología Organizacional"]},
+   {nombre:"Derecho Laboral y de la Seguridad Social", req:["Derecho Constitucional y Administrativo","Idioma Inglés","Idioma Portugués","LA801","LA802","LA803","LA805","LA807"]},
+   {nombre:"Evaluación de Proyectos", req:["Economía Aplicada","Administración Financiera"]},
+   {nombre:"Administración de la Producción", req:["Comercialización I"]},
+   {nombre:"Área Integrada IV", req:[
+      "Comercialización I","Área Integrada III","Administración Estratégica","Administración Financiera",
+      "Análisis de Estados Contables","Derecho Empresario","Economía Aplicada","Estadística II",
+      "Finanzas Públicas","Formación Tributaria","Historia y Recursos Económicos","Psicología y Sociología Organizacional","Sistemas Administrativos"
+   ]},
+   {nombre:"Dirección y Gestión Empresaria", req:["Área Integrada III","Administración de Personal"]}
+ ]},
+ {ciclo:"Requisitos Extracurriculares", materias:[
+   {nombre:"Informática (LA801-807)", req:[]},
+   {nombre:"Inglés (Lectura Comprensiva)", req:[]},
+   {nombre:"Portugués (Lectura Comprensiva)", req:[]}
+ ]}
 ];
 
-const YEARS = [
-  {title:'Nivelación', list:['LA001','LA002']},
-  {title:'1er Año', list:['LA101','LA102','LA103','LA104','LA105','LA106']},
-  {title:'2do Año', list:['LA201','LA202','LA203','LA204','LA205','LA206','LA207','LA208']},
-  {title:'3er Año', list:['OPT02','LA810','LA811','LA301','LA302','LA303','LA304','LA305','LA306','LA307']},
-  {title:'4to Año', list:['LA401','LA402','LA403','LA404','LA405','LA406','LA407','LA408']},
-  {title:'5to Año', list:['LA501','LA502','LA503','LA504','LA505','LA506','LA507']},
-  {title:'Extracurriculares', list:['LA801','LA802','LA803','LA805','LA807']}
-];
+// ---- ESTADOS ----
+const estados=["promocion","regular","libre","disponible"]; // rotación
 
-/* ----- state management ----- */
-function loadState(){ try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){ console.error(e); return {}; } }
-function saveState(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
+function crearMalla(){
+  const cont=document.getElementById("contenedor");
+  cont.innerHTML="";
 
-let stateMap = loadState(); // { id: 'promocion'|'regular'|'libre' }
-let lastUnlockedSet = new Set();
+  materias.forEach(col=>{
+    const c=document.createElement("div");
+    c.className="column";
+    const title=document.createElement("h3");
+    title.textContent=col.ciclo;
+    c.appendChild(title);
 
-function byId(id){ return subjects.find(s=>s.id===id); }
-function isPromocion(id){ return stateMap[id] === 'promocion'; }
-function countPromocion(){ return Object.values(stateMap).filter(v=>v==='promocion').length; }
-function meetsMinApproved(sub){ if(!sub.minApproved) return true; return countPromocion() >= sub.minApproved; }
-function canUnlock(sub){
-  if(!sub) return false;
-  if(sub.minApproved && !meetsMinApproved(sub)) return false;
-  for(const r of (sub.req||[])) if(!isPromocion(r)) return false;
-  return true;
-}
-function missingText(sub){
-  const parts = [];
-  if(sub.minApproved && !meetsMinApproved(sub)) parts.push(`${sub.minApproved} materias en Promoción (tienes ${countPromocion()})`);
-  for(const r of (sub.req||[])) if(!isPromocion(r)){ const s = byId(r); parts.push(s ? s.name : r); }
-  return parts.join('; ');
-}
+    col.materias.forEach(m=>{
+      const card=document.createElement("div");
+      card.className="materia";
+      card.dataset.nombre=m.nombre;
+      card.dataset.req=JSON.stringify(m.req);
 
-/* ----- rendering ----- */
-function render(filterText=''){
-  // clear grids
-  for(let i=0;i<YEARS.length;i++) document.getElementById('grid'+i).innerHTML = '';
+      card.innerHTML=`${m.nombre}
+        <div class='notaBox'>Nota: <input type="number" min="1" max="10" style="width:40px"></div>
+        <div class='tooltip'>Correlativas: ${m.req.join(", ")||"Ninguna"}</div>`;
 
-  // compute unlocks
-  const unlockedNow = new Set();
-  for(const s of subjects) if(canUnlock(s)) unlockedNow.add(s.id);
+      card.addEventListener('click',()=> cambiarEstado(card));
 
-  const newUnlocks = [];
-  for(const id of unlockedNow) if(!lastUnlockedSet.has(id)) newUnlocks.push(id);
-
-  YEARS.forEach((year, idx) => {
-    const grid = document.getElementById('grid'+idx);
-    year.list.forEach(id => {
-      const s = byId(id);
-      const name = s ? s.name : id;
-      if(filterText && !name.toLowerCase().includes(filterText.toLowerCase())) return;
-      const unlocked = s ? canUnlock(s) : true;
-      const st = stateMap[id] || 'none';
-      const approved = st === 'promocion';
-      const el = document.createElement('div');
-      el.className = 'subject' + (approved ? ' approved' : '') + (unlocked ? '' : ' locked');
-      el.setAttribute('data-id', id);
-
-      // left: name + badge
-      const left = document.createElement('div'); left.className='left';
-      const nameDiv = document.createElement('div'); nameDiv.className='name'; nameDiv.textContent = name;
-      left.appendChild(nameDiv);
-
-      const badge = document.createElement('button'); badge.className='badge-state';
-      badge.textContent = (st==='promocion'?'Promoción':(st==='regular'?'Regular':(st==='libre'?'Libre':'Estado')));
-      if(st==='promocion') badge.classList.add('badge-prom'); else if(st==='regular') badge.classList.add('badge-reg'); else if(st==='libre') badge.classList.add('badge-lib');
-
-      badge.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        const choice = prompt('Estado: escribe PROMO (Promoción), REG (Regular), LIB (Libre) o N para Ninguno.','PROMO/REG/LIB/N');
-        if(!choice) return;
-        const c = choice.trim().toUpperCase();
-        if(c.startsWith('PROMO')) stateMap[id] = 'promocion';
-        else if(c.startsWith('REG')) stateMap[id] = 'regular';
-        else if(c.startsWith('LIB')) stateMap[id] = 'libre';
-        else delete stateMap[id];
-        saveState(stateMap);
-        render(document.getElementById('searchInput').value.trim());
-      });
-
-      left.appendChild(badge);
-
-      const meta = document.createElement('div'); meta.className='meta';
-      meta.textContent = (approved ? 'Promoción' : (unlocked ? 'Disponible' : 'Bloqueada'));
-
-      el.appendChild(left);
-      el.appendChild(meta);
-
-      // tooltip if blocked
-      if(!unlocked && s){
-        const tip = document.createElement('div'); tip.className='tooltip';
-        tip.innerHTML = `<b>Requisitos faltantes</b><div style="color:#8b2540">${missingText(s)}</div>`;
-        el.appendChild(tip);
-      }
-
-      // click toggles promocion (if unlocked or force)
-      el.addEventListener('click', (ev) => {
-        const force = ev.ctrlKey || ev.metaKey;
-        if(!force && !unlocked) return;
-        if(stateMap[id] === 'promocion') delete stateMap[id]; else stateMap[id] = 'promocion';
-        saveState(stateMap);
-        render(document.getElementById('searchInput').value.trim());
-      });
-
-      // keyboard: enter toggles
-      el.tabIndex = 0;
-      el.addEventListener('keydown', (ev) => {
-        if(ev.key === 'Enter'){
-          if(canUnlock(s)){
-            if(stateMap[id] === 'promocion') delete stateMap[id]; else stateMap[id] = 'promocion';
-            saveState(stateMap);
-            render(document.getElementById('searchInput').value.trim());
-          }
-        }
-      });
-
-      grid.appendChild(el);
+      c.appendChild(card);
     });
+
+    cont.appendChild(c);
   });
 
-  // update summary and visible count
-  document.getElementById('statusSummary').textContent = `${countPromocion()} materias en Promoción`;
-  document.getElementById('filterCount').textContent = document.querySelectorAll('.subject').length;
+  cargarProgreso();
+  actualizarBloqueos();
+  actualizarProgreso();
+}
 
-  // animate newly unlocked subjects
-  const unlockedAfter = new Set();
-  for(const s of subjects) if(canUnlock(s)) unlockedAfter.add(s.id);
+function cambiarEstado(card){
+  if(card.classList.contains("bloqueada")) return;
+  let index=estados.findIndex(s=>card.classList.contains(s));
+  estados.forEach(s=>card.classList.remove(s));
+  index=(index+1)%estados.length;
+  card.classList.add(estados[index]);
 
-  newUnlocks.forEach(id => {
-    if(unlockedAfter.has(id)){
-      const el = document.querySelector(`[data-id="${id}"]`);
-      if(el && !el.classList.contains('locked') && !(stateMap[id] === 'promocion')){
-        el.classList.add('pop');
-        el.addEventListener('animationend', ()=> el.classList.remove('pop'), {once:true});
-        mascotReact();
-      }
+  guardarProgreso();
+  actualizarBloqueos();
+  actualizarProgreso();
+}
+
+function actualizarBloqueos(){
+  const cards=document.querySelectorAll('.materia');
+
+  cards.forEach(card=>{
+    const req=JSON.parse(card.dataset.req);
+    const aprobadas=[...cards].filter(c=>c.classList.contains('promocion')).map(c=>c.dataset.nombre);
+
+    const cumple=req.every(r=>aprobadas.includes(r));
+
+    if(!cumple){
+      card.classList.add('bloqueada');
+    } else{
+      card.classList.remove('bloqueada');
     }
   });
-
-  lastUnlockedSet = unlockedAfter;
 }
 
-/* export/import/reset handlers */
-document.getElementById('exportBtn').addEventListener('click', ()=> {
-  const payload = { exportedAt: new Date().toISOString(), states: stateMap };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'malla_states_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-});
-
-document.getElementById('importFile').addEventListener('change', (ev)=> {
-  const f = ev.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ()=> {
-    try{
-      const data = JSON.parse(r.result);
-      let incoming = {};
-      if(data && typeof data === 'object'){
-        if(data.states && typeof data.states === 'object') incoming = data.states;
-        else if(data.approved && Array.isArray(data.approved)) data.approved.forEach(id=> incoming[id] = 'promocion');
-        else if(Array.isArray(data)) data.forEach(id=> incoming[id] = 'promocion');
-        else throw new Error('Formato JSON inválido');
-      }
-      if(!confirm(`Importar ${Object.keys(incoming).length} estados? Reemplaza el progreso actual.`)) return;
-      stateMap = incoming; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); alert('Importación realizada');
-    }catch(err){ alert('Error al importar: '+err.message); }
-    ev.target.value = '';
-  };
-  r.readAsText(f);
-});
-
-document.getElementById('resetBtn').addEventListener('click', ()=> {
-  if(!confirm('Reiniciar todo el progreso guardado?')) return;
-  stateMap = {}; saveState(stateMap); render(document.getElementById('searchInput').value.trim());
-});
-
-/* search */
-document.getElementById('searchInput').addEventListener('input', (ev)=> { render(ev.target.value.trim()); });
-
-/* mascot walking logic (pixel walk) */
-const mascotEl = document.getElementById('mascot');
-const mascotSVG = document.getElementById('mascotSVG');
-let mascotState = { x: 10, vx: 0.14, dir: 1, width:96, windowW: window.innerWidth };
-
-function mascotStep(){
-  mascotState.windowW = window.innerWidth;
-  mascotState.x += mascotState.vx * mascotState.dir;
-  const minX = 6;
-  const maxX = mascotState.windowW - mascotState.width - 6;
-  if(mascotState.x > maxX){ mascotState.x = maxX; mascotState.dir = -1; mascotSVG.style.transform = 'scaleX(-1)'; }
-  if(mascotState.x < minX){ mascotState.x = minX; mascotState.dir = 1; mascotSVG.style.transform = 'scaleX(1)'; }
-  mascotEl.style.left = mascotState.x + 'px';
-  requestAnimationFrame(mascotStep);
-}
-requestAnimationFrame(mascotStep);
-
-function mascotReact(){
-  // small hop + speed burst
-  mascotSVG.style.transition = 'transform .18s ease';
-  const orig = mascotState.dir === 1 ? 'scaleX(1)' : 'scaleX(-1)';
-  mascotSVG.style.transform = orig + ' translateY(-8px) scale(1.06)';
-  const oldV = mascotState.vx;
-  mascotState.vx = oldV * 3.8;
-  setTimeout(()=>{ mascotSVG.style.transform = orig; mascotState.vx = oldV; }, 350);
+function guardarProgreso(){
+  const data=[...document.querySelectorAll('.materia')].map(c=>({
+    nombre:c.dataset.nombre,
+    estado:estados.find(s=>c.classList.contains(s))||"",
+    nota:c.querySelector('input').value
+  }));
+  localStorage.setItem('progresoAE',JSON.stringify(data));
 }
 
-/* init */
-(function init(){
-  const initSet = new Set();
-  for(const s of subjects) if(canUnlock(s)) initSet.add(s.id);
-  lastUnlockedSet = initSet;
-  document.addEventListener('DOMContentLoaded', ()=> render(''));
-})();
+function cargarProgreso(){
+  const saved=JSON.parse(localStorage.getItem('progresoAE')||"[]");
+  saved.forEach(s=>{
+    const card=document.querySelector(`.materia[data-nombre='${s.nombre}']`);
+    if(card){
+      if(s.estado) card.classList.add(s.estado);
+      card.querySelector('input').value=s.nota;
+    }
+  });
+}
 
-/* storage sync across tabs */
-window.addEventListener('storage', (e) => {
-  if(e.key === STORAGE_KEY){
-    try{ stateMap = JSON.parse(e.newValue || '{}'); }catch(e){}
-    render(document.getElementById('searchInput').value.trim());
-  }
-});
+function actualizarProgreso(){
+  const cards=[...document.querySelectorAll('.materia')];
+  const total=cards.length;
+  const promo=cards.filter(c=>c.classList.contains('promocion')).length;
+  const pct=Math.round((promo/total)*100);
+
+  document.getElementById("progressBar").style.width=pct+"%";
+  document.getElementById("progressLabel").textContent=`Avance: ${pct}%`;
+}
+
+crearMalla();
 </script>
 </body>
 </html>
