@@ -5,99 +5,83 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Malla Interactiva — Administración de Empresas</title>
 <style>
-  /* Tema: rosa bebé pálido / estilo intermedio / animación pop */
   :root{
-    --bg:#FFF6F8;
-    --card:#FFFFFF;
-    --accent:#FDE2E4;
-    --accent-2:#F8C8DC;
-    --text:#2b1720;
-    --muted:#6b5960;
-    --ok:#2aa67a; /* verde para promocion/aprobada */
-    --warn:#f0b429; /* amarillo regular */
-    --libre:#f28fa1; /* rosa para libre */
-    --shadow: 0 10px 30px rgba(37,20,24,0.06);
-    --radius:12px;
-    font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --bg:#FFF6F8; --card:#FFF; --accent:#FDE2E4; --accent-2:#F8C8DC;
+    --text:#2b1720; --muted:#6b5960; --ok:#2aa67a; --warn:#f0b429; --libre:#f28fa1;
+    --shadow:0 10px 30px rgba(37,20,24,0.06); --radius:12px;
+    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
   }
-  html,body{height:100%; margin:0; padding:20px; background:linear-gradient(180deg,var(--bg),#fff); color:var(--text);}
-  header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+  html,body{height:100%;margin:0;padding:20px;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text)}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
   h1{font-size:18px;margin:0}
   .subtitle{color:var(--muted);font-size:13px}
   .controls{display:flex;gap:8px;align-items:center}
 
-  button{background:var(--accent-2);border:0;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:#fff}
+  button{background:var(--accent-2);border:0;padding:8px 12px;border-radius:10px;cursor:pointer;color:#fff}
   button.ghost{background:transparent;color:var(--text);border:1px solid rgba(0,0,0,0.06);padding:8px 10px}
   input[type="file"]{display:none}
 
-  .topbar{display:flex;gap:12px;align-items:center}
+  .searchWrap{display:flex;gap:8px;align-items:center;background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:12px}
+  .search{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);min-width:320px}
+  .small{font-size:13px;color:var(--muted)}
+
   .wrap{display:flex;gap:16px;overflow:auto;padding-bottom:14px}
   .column{
-    min-width:240px;background:var(--card);border-radius:var(--radius);padding:14px;
-    box-shadow:var(--shadow);flex:0 0 260px;
-    /* FIX tooltip visibility */
-    position: relative;
-    z-index: 1;
-    overflow: visible;
+    min-width:240px;background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);
+    flex:0 0 260px;
+    position: relative; z-index:1; overflow: visible; /* important: tooltip visibility */
   }
   .column h2{margin:0 0 10px 0;font-size:14px;color:#4a2730}
-
   .grid{display:flex;flex-direction:column;gap:10px}
 
   .subject{
     display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;
     background:linear-gradient(180deg,#fff,#fff);border:1px solid rgba(37,20,24,0.04);
-    transition: transform .14s ease, box-shadow .14s ease, background .18s;
-    position:relative; cursor:pointer;
+    transition: transform .14s ease, box-shadow .14s ease, background .18s; position:relative; cursor:pointer;
   }
   .subject:hover{ transform: translateY(-4px); box-shadow: 0 12px 28px rgba(37,20,24,0.06); }
-  .subject.locked{ opacity:0.7; filter:grayscale(.02); cursor:default; transform:none; box-shadow:none; }
+  .subject.locked{ opacity:0.75; filter:grayscale(.02); cursor:default; transform:none; box-shadow:none; }
   .subject .left{display:flex;align-items:center;gap:10px;min-width:0}
   .subject .name{ font-weight:700; font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .subject .meta{ font-size:12px; color:var(--muted); min-width:92px; text-align:right; }
+
   .badge-state{ margin-left:8px;padding:4px 8px;border-radius:999px;font-size:12px;color:white;font-weight:700;cursor:pointer;border:0 }
   .badge-prom{ background:var(--ok) }
   .badge-reg{ background:var(--warn); color:#4a2b00 }
   .badge-lib{ background:var(--libre); color:#4a0b1b }
+
   .subject.approved{ border-left:6px solid var(--ok); background: linear-gradient(180deg,#fffaf8,#fff) }
 
   .tooltip{
     position:absolute; left:calc(100% + 12px); top:6px; width:260px;
-    background: linear-gradient(180deg,#ffeef6,#ffdff0);
-    color:#2b0b15; padding:10px; border-radius:10px; font-size:13px; box-shadow:0 10px 30px rgba(37,20,24,0.08);
-    display:none; z-index:60; border:1px solid rgba(0,0,0,0.04)
+    background: linear-gradient(180deg,#ffeef6,#ffdff0); color:#2b0b15; padding:10px; border-radius:10px;
+    font-size:13px; box-shadow:0 10px 30px rgba(37,20,24,0.08); display:none; z-index:999; border:1px solid rgba(0,0,0,0.04)
   }
   .tooltip b{display:block;margin-bottom:6px}
   .subject.locked:hover .tooltip{ display:block }
 
-  /* Pop animation */
-  @keyframes pop {
-    0% { transform: scale(0.94); opacity:0; }
-    40% { transform: scale(1.10); opacity:1; }
-    100% { transform: scale(1); opacity:1; }
-  }
-  .pop { animation: pop .38s cubic-bezier(.2,.9,.2,1); box-shadow: 0 14px 34px rgba(37,20,24,0.08) !important; }
+  @keyframes pop {0%{transform:scale(.94);opacity:0}40%{transform:scale(1.10);opacity:1}100%{transform:scale(1);opacity:1}}
+  .pop{animation:pop .38s cubic-bezier(.2,.9,.2,1);box-shadow:0 14px 34px rgba(37,20,24,0.08) !important}
 
-  /* buscador */
-  .searchWrap{display:flex;gap:8px;align-items:center;background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:12px}
-  .search{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);min-width:320px}
-  .small{font-size:13px;color:var(--muted)}
-
-  /* mascotita */
+  /* mascotita caminante (pixel walk) */
   .mascot{
-    position:fixed; right:18px; bottom:18px; width:120px; height:120px; border-radius:14px; overflow:hidden;
-    box-shadow: 0 10px 30px rgba(37,20,24,0.08); background: linear-gradient(180deg,#fff,#ffeef6);
-    display:flex;align-items:center;justify-content:center; z-index:120;
-    cursor:pointer;
+    position:fixed; left:10px; bottom:40px; width:96px; height:96px; border-radius:8px; overflow:visible; z-index:120;
+    display:flex;align-items:center;justify-content:center; pointer-events:auto;
   }
-  .mascot img{ width:100%; height:100%; object-fit:contain; display:block; }
-  .mascot .bubble{ position:absolute; left:-22px; bottom:100%; background:var(--accent); color:#7a2440; padding:6px 8px; border-radius:8px; font-weight:700; font-size:12px; transform:translateY(8px); opacity:0; transition: .18s; }
-  .mascot:hover .bubble{ transform:translateY(0); opacity:1; }
-  /* small float */
-  @keyframes floaty { 0%{ transform: translateY(0)} 50%{transform: translateY(-6px)} 100%{transform: translateY(0)} }
-  .mascot { animation: floaty 4s ease-in-out infinite; }
+  .mascot img{ width:96px; height:96px; image-rendering: pixelated; display:block; transform-origin:center; transition: transform .18s ease; }
+  /* walk keyframes: move across screen left->right->left */
+  @keyframes walkAcross {
+    0% { transform: translateX(0) scaleX(1); left:6px; }
+    25% { left:25%; transform: translateX(0) scaleX(1); }
+    50% { left:50%; transform: translateX(0) scaleX(-1); }
+    75% { left:75%; transform: translateX(0) scaleX(-1); }
+    100% { left:calc(100% - 120px); transform: translateX(0) scaleX(1); left:6px; } /* returns */
+  }
+  /* We'll control movement via JS for smoother bounce; this is fallback */
+  @media (max-width:900px){ .wrap{padding-bottom:12px} .column{min-width:220px} .tooltip{display:none} .mascot{display:none} }
 
-  @media(max-width:900px){ .wrap{padding-bottom:12px} .column{min-width:220px} .tooltip{display:none} .mascot{display:none} }
+  /* small utilities */
+  .controls .small{min-width:140px;text-align:right}
 </style>
 </head>
 <body>
@@ -108,19 +92,17 @@
   </div>
   <div class="controls">
     <div class="small" id="statusSummary">Cargando...</div>
-    <button id="exportBtn" title="Exportar progreso">Exportar</button>
+    <button id="exportBtn">Exportar</button>
     <label for="importFile" class="ghost" style="padding:8px 10px;border-radius:10px;cursor:pointer">Importar</label>
     <input type="file" id="importFile" accept="application/json">
-    <button id="resetBtn" class="ghost" title="Reiniciar">Reiniciar</button>
+    <button id="resetBtn" class="ghost">Reiniciar</button>
   </div>
 </header>
 
 <section class="searchWrap">
   <input id="searchInput" class="search" placeholder="Buscar materia por nombre..." aria-label="Buscar materias">
   <div class="small" style="min-width:120px;text-align:right">Visibles: <span id="filterCount">—</span></div>
-  <div style="margin-left:8px">
-    <a href="/mnt/data/LAE - RÉGIMEN DE CORRELATIVIDADES.pdf" target="_blank" style="text-decoration:none;color:#b23a6b;font-weight:600">Ver PDF correlatividades</a>
-  </div>
+  <div style="margin-left:8px"><a href="/mnt/data/LAE - RÉGIMEN DE CORRELATIVIDADES.pdf" target="_blank" style="text-decoration:none;color:#b23a6b;font-weight:600">Ver PDF correlatividades</a></div>
 </section>
 
 <main>
@@ -133,20 +115,19 @@
     <div class="column" id="col5"><h2>5to Año</h2><div class="grid" id="grid5"></div></div>
     <div class="column" id="col6"><h2>Extracurriculares</h2><div class="grid" id="grid6"></div></div>
   </div>
-  <div style="margin-top:10px" class="small">Nota: Click izquierdo marca/desmarca <strong>Promoción</strong>. Badge lateral permite elegir <em>Promoción/Regular/Libre/Ninguno</em>. Ctrl/Cmd+clic fuerza toggle.</div>
+  <div style="margin-top:10px" class="small">Nota: Clic izquierdo marca/desmarca <strong>Promoción</strong> (desbloquea correlativas). Badge lateral permite elegir Promoción/Regular/Libre.</div>
 </main>
 
-<!-- Mascotita (la imagen que subiste) -->
-<div class="mascot" id="mascot" title="Negro — tu mascotita">
-  <div class="bubble">¡Hola! Soy Negro 🐾</div>
-  <img src="/mnt/data/cute silly black cat pixel art 🐈_⬛.jpg" alt="Mascota Negro">
+<!-- Mascotita caminante: usa la imagen que subiste en el entorno -->
+<div class="mascot" id="mascot" title="Negro, tu mascota">
+  <img id="mascotImg" src="/mnt/data/cute silly black cat pixel art 🐈_⬛.jpg" alt="Negro">
 </div>
 
 <script>
-/* STORAGE y datos */
-const STORAGE_KEY = 'malla_interactiva_admin_empresas_v1';
+/* --- Datos y persistencia --- */
+const STORAGE_KEY = 'malla_interactiva_admin_empresas_v1_states';
 
-// subjects: id, name, req (ids), minApproved optional
+/* subjects similar a los previos (IDs internos para correlativas) */
 const subjects = [
   {id:'LA001', name:'Área Matemática', req:[]},
   {id:'LA002', name:'Área Integrada I', req:[]},
@@ -212,28 +193,19 @@ const YEARS = [
   {title:'Extracurriculares', list:['LA801','LA802','LA803','LA805','LA807']}
 ];
 
-/* ---- Estado guardado: objeto { id: state } donde state = 'promocion'|'regular'|'libre'|'none' ---- */
+/* --- Estado: map id => 'promocion'|'regular'|'libre'|'none' --- */
 function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return {};
-    return JSON.parse(raw);
-  }catch(e){ console.error(e); return {}; }
+  try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){return{};}
 }
 function saveState(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
-
-let stateMap = loadState(); // ej: { LA101: 'promocion', LA102: 'regular' }
-let lastUnlockedSet = new Set(); // para animar nuevos desbloqueos
+let stateMap = loadState();
+let lastUnlockedSet = new Set();
 
 /* util */
 function byId(id){ return subjects.find(s=>s.id===id); }
 function isPromocion(id){ return stateMap[id] === 'promocion'; }
 function countPromocion(){ return Object.values(stateMap).filter(v=>v==='promocion').length; }
-function meetsMinApproved(sub){
-  if(!sub.minApproved) return true;
-  return countPromocion() >= sub.minApproved;
-}
-/* decide si la materia está desbloqueada -> solo promocion cuenta */
+function meetsMinApproved(sub){ if(!sub.minApproved) return true; return countPromocion() >= sub.minApproved; }
 function canUnlock(sub){
   if(!sub) return false;
   if(sub.minApproved && !meetsMinApproved(sub)) return false;
@@ -252,29 +224,23 @@ function missingText(sub){
   return parts.join('; ');
 }
 
-/* render y animaciones */
+/* render */
 function render(filterText=''){
-  // limpiar
   for(let i=0;i<YEARS.length;i++) document.getElementById('grid'+i).innerHTML='';
 
-  // calcular unlocks ahora
   const unlockedNow = new Set();
   for(const s of subjects) if(canUnlock(s)) unlockedNow.add(s.id);
-
-  // detectar nuevos unlocks
   const newUnlocks = [];
   for(const id of unlockedNow) if(!lastUnlockedSet.has(id)) newUnlocks.push(id);
 
-  YEARS.forEach((year, idx) => {
+  YEARS.forEach((year, idx)=>{
     const grid = document.getElementById('grid'+idx);
     year.list.forEach(id=>{
-      const s = byId(id);
-      const name = s ? s.name : id;
+      const s = byId(id); const name = s? s.name : id;
       if(filterText && !name.toLowerCase().includes(filterText.toLowerCase())) return;
-
       const unlocked = s ? canUnlock(s) : true;
       const st = stateMap[id] || 'none';
-      const approved = st === 'promocion';
+      const approved = st==='promocion';
       const el = document.createElement('div');
       el.className = 'subject' + (approved ? ' approved' : '') + (unlocked ? '' : ' locked');
       el.setAttribute('data-id', id);
@@ -283,29 +249,19 @@ function render(filterText=''){
       const nameDiv = document.createElement('div'); nameDiv.className='name'; nameDiv.textContent = name;
       left.appendChild(nameDiv);
 
-      // badge estado pequeño (click abre opción para elegir estado)
-      const badge = document.createElement('button');
-      badge.className = 'badge-state';
-      badge.textContent = (st==='promocion' ? 'Promoción' : (st==='regular' ? 'Regular' : (st==='libre' ? 'Libre' : 'Estado')));
-      if(st==='promocion') badge.classList.add('badge-prom');
-      else if(st==='regular') badge.classList.add('badge-reg');
-      else if(st==='libre') badge.classList.add('badge-lib');
+      const badge = document.createElement('button'); badge.className='badge-state';
+      badge.textContent = (st==='promocion'?'Promoción':(st==='regular'?'Regular':(st==='libre'?'Libre':'Estado')));
+      if(st==='promocion') badge.classList.add('badge-prom'); else if(st==='regular') badge.classList.add('badge-reg'); else if(st==='libre') badge.classList.add('badge-lib');
 
-      // badge click: elegir estado mediante prompt simple (UI minimal)
-      badge.addEventListener('click', (ev) => {
+      badge.addEventListener('click', (ev)=>{
         ev.stopPropagation();
-        const choice = prompt('Estado: escribe PROMO (Promoción), REG (Regular), LIB (Libre) o N para Ninguno.\nPromoción desbloquea correlativas; Regular/Libre son informativos.', 'PROMO/REG/LIB/N');
+        const choice = prompt('Estado: escribe PROMO (Promoción), REG (Regular), LIB (Libre) o N para Ninguno.','PROMO/REG/LIB/N');
         if(!choice) return;
         const c = choice.trim().toUpperCase();
-        if(c.startsWith('PROMO')){
-          stateMap[id] = 'promocion';
-        } else if(c.startsWith('REG')){
-          stateMap[id] = 'regular';
-        } else if(c.startsWith('LIB')){
-          stateMap[id] = 'libre';
-        } else {
-          delete stateMap[id];
-        }
+        if(c.startsWith('PROMO')) stateMap[id] = 'promocion';
+        else if(c.startsWith('REG')) stateMap[id] = 'regular';
+        else if(c.startsWith('LIB')) stateMap[id] = 'libre';
+        else delete stateMap[id];
         saveState(stateMap);
         render(document.getElementById('searchInput').value.trim());
       });
@@ -315,156 +271,123 @@ function render(filterText=''){
       const meta = document.createElement('div'); meta.className='meta';
       meta.textContent = (approved ? 'Promoción' : (unlocked ? 'Disponible' : 'Bloqueada'));
 
-      el.appendChild(left);
-      el.appendChild(meta);
+      el.appendChild(left); el.appendChild(meta);
 
-      // tooltip
       if(!unlocked && s){
         const tip = document.createElement('div'); tip.className='tooltip';
         tip.innerHTML = `<b>Requisitos faltantes</b><div style="color:#8b2540">${missingText(s)}</div>`;
         el.appendChild(tip);
       }
 
-      // click izquierdo: toggle promocion (aprobada) inmediatamente if unlocked OR force with ctrl/meta
       el.addEventListener('click', (ev)=>{
         const force = ev.ctrlKey || ev.metaKey;
         if(!force && !unlocked) return;
-        if(stateMap[id] === 'promocion') delete stateMap[id];
-        else stateMap[id] = 'promocion';
+        if(stateMap[id] === 'promocion') delete stateMap[id]; else stateMap[id] = 'promocion';
         saveState(stateMap);
         render(document.getElementById('searchInput').value.trim());
       });
 
-      // keyboard enter toggles promoción if unlocked
       el.tabIndex = 0;
-      el.addEventListener('keydown', (ev)=>{
-        if(ev.key === 'Enter'){
-          if(canUnlock(s)){
-            if(stateMap[id] === 'promocion') delete stateMap[id]; else stateMap[id] = 'promocion';
-            saveState(stateMap);
-            render(document.getElementById('searchInput').value.trim());
-          }
-        }
-      });
+      el.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter'){ if(canUnlock(s)){ if(stateMap[id]==='promocion') delete stateMap[id]; else stateMap[id]='promocion'; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); } } });
 
       grid.appendChild(el);
     });
   });
 
-  // actualizar resumen y contador visible
   const promocionCount = countPromocion();
   document.getElementById('statusSummary').textContent = `${promocionCount} materias en Promoción`;
   document.getElementById('filterCount').textContent = document.querySelectorAll('.subject').length;
 
-  // animar nuevos desbloqueos (pop)
-  const unlockedAfter = new Set();
-  for(const s of subjects) if(canUnlock(s)) unlockedAfter.add(s.id);
-
+  // animar nuevos desbloqueos
+  const unlockedAfter = new Set(); for(const s of subjects) if(canUnlock(s)) unlockedAfter.add(s.id);
   newUnlocks.forEach(id=>{
     if(unlockedAfter.has(id)){
       const el = document.querySelector(`[data-id="${id}"]`);
       if(el && !el.classList.contains('locked') && !(stateMap[id] === 'promocion')){
         el.classList.add('pop');
         el.addEventListener('animationend', ()=> el.classList.remove('pop'), {once:true});
-        // también hacer parpadeo en la mascotita (pequeña interacción)
-        const mascot = document.getElementById('mascot');
-        if(mascot){
-          mascot.style.transform = 'scale(1.06)';
-          setTimeout(()=> mascot.style.transform = '', 350);
-        }
+        // mascotita reacciona: step towards center and small hop
+        mascotReact();
       }
     }
   });
-
   lastUnlockedSet = unlockedAfter;
 }
 
-/* helpers de estado */
-function countPromocion(){
-  return Object.values(stateMap).filter(v=>v==='promocion').length;
-}
-
-/* persistencia (export/import/reset) */
+/* export/import/reset */
 document.getElementById('exportBtn').addEventListener('click', ()=>{
   const payload = { exportedAt: new Date().toISOString(), states: stateMap };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'malla_states_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'malla_states_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 });
-
 document.getElementById('importFile').addEventListener('change', (ev)=>{
-  const f = ev.target.files[0];
-  if(!f) return;
+  const f = ev.target.files[0]; if(!f) return;
   const r = new FileReader();
-  r.onload = ()=>{
+  r.onload = ()=> {
     try{
       const data = JSON.parse(r.result);
       let incoming = {};
       if(data && typeof data === 'object'){
         if(data.states && typeof data.states === 'object') incoming = data.states;
-        else if(data.approved && Array.isArray(data.approved)){
-          // backward compatibility: array of ids -> mark them as promocion
-          data.approved.forEach(id=> incoming[id] = 'promocion');
-        } else if(Array.isArray(data)) {
-          data.forEach(id=> incoming[id] = 'promocion');
-        } else {
-          throw new Error('Formato JSON inválido.');
-        }
+        else if(data.approved && Array.isArray(data.approved)) data.approved.forEach(id=> incoming[id]='promocion');
+        else if(Array.isArray(data)) data.forEach(id=> incoming[id]='promocion');
+        else throw new Error('Formato JSON inválido');
       }
-      if(!confirm(`Importar ${Object.keys(incoming).length} estados. Reemplaza el progreso actual?`)) return;
-      stateMap = incoming;
-      saveState(stateMap);
-      render(document.getElementById('searchInput').value.trim());
-      alert('Importación exitosa.');
-    }catch(err){ alert('Error al importar JSON: ' + err.message); }
+      if(!confirm(`Importar ${Object.keys(incoming).length} estados? Reemplaza el progreso actual.`)) return;
+      stateMap = incoming; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); alert('Importación realizada');
+    }catch(err){ alert('Error al importar: '+err.message); }
     ev.target.value = '';
   };
   r.readAsText(f);
 });
+document.getElementById('resetBtn').addEventListener('click', ()=>{ if(!confirm('Reiniciar todo el progreso?')) return; stateMap = {}; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); });
 
-document.getElementById('resetBtn').addEventListener('click', ()=>{
-  if(!confirm('Reiniciar todo el progreso guardado?')) return;
-  stateMap = {};
-  saveState(stateMap);
-  render(document.getElementById('searchInput').value.trim());
-});
+/* buscador */
+document.getElementById('searchInput').addEventListener('input', (ev)=>{ render(ev.target.value.trim()); });
 
-/* buscador en tiempo real */
-document.getElementById('searchInput').addEventListener('input', (ev)=>{
-  render(ev.target.value.trim());
-});
+/* mascotita movement: pixel walk left-right with bounce.
+   We'll move the element smoothly using requestAnimationFrame, flipping image when direction changes.
+*/
+const mascotEl = document.getElementById('mascot');
+const mascotImg = document.getElementById('mascotImg');
+let mascotState = { x: 10, vx: 0.18, dir: 1, width:96, windowW: window.innerWidth };
+function mascotStep(){
+  mascotState.windowW = window.innerWidth;
+  mascotState.x += mascotState.vx * mascotState.dir;
+  // bounce at edges (keep inside 6px.. windowW - width - 6)
+  const minX = 6;
+  const maxX = mascotState.windowW - mascotState.width - 6;
+  if(mascotState.x > maxX){ mascotState.x = maxX; mascotState.dir = -1; mascotImg.style.transform = 'scaleX(-1)'; }
+  if(mascotState.x < minX){ mascotState.x = minX; mascotState.dir = 1; mascotImg.style.transform = 'scaleX(1)'; }
+  mascotEl.style.left = mascotState.x + 'px';
+  requestAnimationFrame(mascotStep);
+}
+window.addEventListener('resize', ()=> { mascotState.windowW = window.innerWidth; });
+requestAnimationFrame(mascotStep);
+
+/* mascot reaction: small hop and brief speed-up */
+function mascotReact(){
+  // quick hop
+  mascotImg.style.transition = 'transform .18s ease';
+  const origScale = mascotState.dir === 1 ? 'scaleX(1)' : 'scaleX(-1)';
+  mascotImg.style.transform = origScale + ' translateY(-8px) scale(1.06)';
+  // speed boost
+  const oldV = mascotState.vx;
+  mascotState.vx = oldV * 3.8;
+  setTimeout(()=>{ mascotImg.style.transform = origScale; mascotState.vx = oldV; }, 350);
+}
 
 /* init */
 (function init(){
-  // asegurarnos lastUnlockedSet inicial
+  // build initial unlocked set
   const initSet = new Set();
   for(const s of subjects) if(canUnlock(s)) initSet.add(s.id);
   lastUnlockedSet = initSet;
   document.addEventListener('DOMContentLoaded', ()=> render(''));
 })();
 
-/* sincronizar entre pestañas */
-window.addEventListener('storage', (e)=>{
-  if(e.key === STORAGE_KEY){
-    try{ stateMap = JSON.parse(e.newValue || '{}'); }catch(e){}
-    render(document.getElementById('searchInput').value.trim());
-  }
-});
-
-/* interacción mascotita: click para saludar (pequeña animación y texto temporal) */
-const mascot = document.getElementById('mascot');
-if(mascot){
-  mascot.addEventListener('click', ()=>{
-    const bubble = mascot.querySelector('.bubble');
-    const old = bubble.textContent;
-    bubble.textContent = '¡Miau! 🐾';
-    bubble.style.transform = 'translateY(0)';
-    bubble.style.opacity = '1';
-    setTimeout(()=> { bubble.textContent = old; }, 1200);
-    mascot.style.transform = 'scale(1.06)';
-    setTimeout(()=> mascot.style.transform = '', 400);
-  });
-}
+/* storage sync */
+window.addEventListener('storage', (e)=>{ if(e.key === STORAGE_KEY){ try{ stateMap = JSON.parse(e.newValue||'{}'); }catch(e){} render(document.getElementById('searchInput').value.trim()); } });
 </script>
 </body>
 </html>
