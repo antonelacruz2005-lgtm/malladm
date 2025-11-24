@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Malla Interactiva — Administración de Empresas</title>
+<style>
+  /* Tema: rosa bebé pálido / estilo intermedio / animación pop */
+  :root{
+    --bg:#FFF6F8;
+    --card:#FFFFFF;
+    --accent:#FDE2E4;
+    --accent-2:#F8C8DC;
+    --text:#2b1720;
+    --muted:#6b5960;
+    --ok:#2aa67a; /* verde para promocion/aprobada */
+    --warn:#f0b429; /* amarillo regular */
+    --libre:#f28fa1; /* rosa para libre */
+    --shadow: 0 10px 30px rgba(37,20,24,0.06);
+    --radius:12px;
+    font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  html,body{height:100%; margin:0; padding:20px; background:linear-gradient(180deg,var(--bg),#fff); color:var(--text);}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+  h1{font-size:18px;margin:0}
+  .subtitle{color:var(--muted);font-size:13px}
+  .controls{display:flex;gap:8px;align-items:center}
+
+  button{background:var(--accent-2);border:0;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:#fff}
+  button.ghost{background:transparent;color:var(--text);border:1px solid rgba(0,0,0,0.06);padding:8px 10px}
+  input[type="file"]{display:none}
+
+  .topbar{display:flex;gap:12px;align-items:center}
+  .wrap{display:flex;gap:16px;overflow:auto;padding-bottom:14px}
+  .column{
+    min-width:240px;background:var(--card);border-radius:var(--radius);padding:14px;
+    box-shadow:var(--shadow);flex:0 0 260px;
+    /* FIX tooltip visibility */
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+  }
+  .column h2{margin:0 0 10px 0;font-size:14px;color:#4a2730}
+
+  .grid{display:flex;flex-direction:column;gap:10px}
+
+  .subject{
+    display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;
+    background:linear-gradient(180deg,#fff,#fff);border:1px solid rgba(37,20,24,0.04);
+    transition: transform .14s ease, box-shadow .14s ease, background .18s;
+    position:relative; cursor:pointer;
+  }
+  .subject:hover{ transform: translateY(-4px); box-shadow: 0 12px 28px rgba(37,20,24,0.06); }
+  .subject.locked{ opacity:0.7; filter:grayscale(.02); cursor:default; transform:none; box-shadow:none; }
+  .subject .left{display:flex;align-items:center;gap:10px;min-width:0}
+  .subject .name{ font-weight:700; font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .subject .meta{ font-size:12px; color:var(--muted); min-width:92px; text-align:right; }
+  .badge-state{ margin-left:8px;padding:4px 8px;border-radius:999px;font-size:12px;color:white;font-weight:700;cursor:pointer;border:0 }
+  .badge-prom{ background:var(--ok) }
+  .badge-reg{ background:var(--warn); color:#4a2b00 }
+  .badge-lib{ background:var(--libre); color:#4a0b1b }
+  .subject.approved{ border-left:6px solid var(--ok); background: linear-gradient(180deg,#fffaf8,#fff) }
+
+  .tooltip{
+    position:absolute; left:calc(100% + 12px); top:6px; width:260px;
+    background: linear-gradient(180deg,#ffeef6,#ffdff0);
+    color:#2b0b15; padding:10px; border-radius:10px; font-size:13px; box-shadow:0 10px 30px rgba(37,20,24,0.08);
+    display:none; z-index:60; border:1px solid rgba(0,0,0,0.04)
+  }
+  .tooltip b{display:block;margin-bottom:6px}
+  .subject.locked:hover .tooltip{ display:block }
+
+  /* Pop animation */
+  @keyframes pop {
+    0% { transform: scale(0.94); opacity:0; }
+    40% { transform: scale(1.10); opacity:1; }
+    100% { transform: scale(1); opacity:1; }
+  }
+  .pop { animation: pop .38s cubic-bezier(.2,.9,.2,1); box-shadow: 0 14px 34px rgba(37,20,24,0.08) !important; }
+
+  /* buscador */
+  .searchWrap{display:flex;gap:8px;align-items:center;background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:12px}
+  .search{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);min-width:320px}
+  .small{font-size:13px;color:var(--muted)}
+
+  /* mascotita */
+  .mascot{
+    position:fixed; right:18px; bottom:18px; width:120px; height:120px; border-radius:14px; overflow:hidden;
+    box-shadow: 0 10px 30px rgba(37,20,24,0.08); background: linear-gradient(180deg,#fff,#ffeef6);
+    display:flex;align-items:center;justify-content:center; z-index:120;
+    cursor:pointer;
+  }
+  .mascot img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .mascot .bubble{ position:absolute; left:-22px; bottom:100%; background:var(--accent); color:#7a2440; padding:6px 8px; border-radius:8px; font-weight:700; font-size:12px; transform:translateY(8px); opacity:0; transition: .18s; }
+  .mascot:hover .bubble{ transform:translateY(0); opacity:1; }
+  /* small float */
+  @keyframes floaty { 0%{ transform: translateY(0)} 50%{transform: translateY(-6px)} 100%{transform: translateY(0)} }
+  .mascot { animation: floaty 4s ease-in-out infinite; }
+
+  @media(max-width:900px){ .wrap{padding-bottom:12px} .column{min-width:220px} .tooltip{display:none} .mascot{display:none} }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Malla Interactiva — Administración de Empresas</h1>
+    <div class="subtitle">Progreso local — tema rosa</div>
+  </div>
+  <div class="controls">
+    <div class="small" id="statusSummary">Cargando...</div>
+    <button id="exportBtn" title="Exportar progreso">Exportar</button>
+    <label for="importFile" class="ghost" style="padding:8px 10px;border-radius:10px;cursor:pointer">Importar</label>
+    <input type="file" id="importFile" accept="application/json">
+    <button id="resetBtn" class="ghost" title="Reiniciar">Reiniciar</button>
+  </div>
+</header>
+
+<section class="searchWrap">
+  <input id="searchInput" class="search" placeholder="Buscar materia por nombre..." aria-label="Buscar materias">
+  <div class="small" style="min-width:120px;text-align:right">Visibles: <span id="filterCount">—</span></div>
+  <div style="margin-left:8px">
+    <a href="/mnt/data/LAE - RÉGIMEN DE CORRELATIVIDADES.pdf" target="_blank" style="text-decoration:none;color:#b23a6b;font-weight:600">Ver PDF correlatividades</a>
+  </div>
+</section>
+
+<main>
+  <div class="wrap" id="wrap">
+    <div class="column" id="col0"><h2>Nivelación</h2><div class="grid" id="grid0"></div></div>
+    <div class="column" id="col1"><h2>1er Año</h2><div class="grid" id="grid1"></div></div>
+    <div class="column" id="col2"><h2>2do Año</h2><div class="grid" id="grid2"></div></div>
+    <div class="column" id="col3"><h2>3er Año</h2><div class="grid" id="grid3"></div></div>
+    <div class="column" id="col4"><h2>4to Año</h2><div class="grid" id="grid4"></div></div>
+    <div class="column" id="col5"><h2>5to Año</h2><div class="grid" id="grid5"></div></div>
+    <div class="column" id="col6"><h2>Extracurriculares</h2><div class="grid" id="grid6"></div></div>
+  </div>
+  <div style="margin-top:10px" class="small">Nota: Click izquierdo marca/desmarca <strong>Promoción</strong>. Badge lateral permite elegir <em>Promoción/Regular/Libre/Ninguno</em>. Ctrl/Cmd+clic fuerza toggle.</div>
+</main>
+
+<!-- Mascotita (la imagen que subiste) -->
+<div class="mascot" id="mascot" title="Negro — tu mascotita">
+  <div class="bubble">¡Hola! Soy Negro 🐾</div>
+  <img src="/mnt/data/cute silly black cat pixel art 🐈_⬛.jpg" alt="Mascota Negro">
+</div>
+
+<script>
+/* STORAGE y datos */
+const STORAGE_KEY = 'malla_interactiva_admin_empresas_v1';
+
+// subjects: id, name, req (ids), minApproved optional
+const subjects = [
+  {id:'LA001', name:'Área Matemática', req:[]},
+  {id:'LA002', name:'Área Integrada I', req:[]},
+
+  {id:'LA101', name:'Problemática Filosófica y Metodología de las Ciencias', req:['LA002']},
+  {id:'LA102', name:'Álgebra', req:['LA001']},
+  {id:'LA103', name:'Contabilidad Básica', req:['LA002']},
+  {id:'LA104', name:'Principios de Administración y Organización', req:['LA002']},
+  {id:'LA105', name:'Análisis Matemático', req:['LA102']},
+  {id:'LA106', name:'Microeconomía I', req:['LA102']},
+
+  {id:'LA201', name:'Derecho Privado I', req:['LA002','LA001']},
+  {id:'LA202', name:'Administración', req:['LA104']},
+  {id:'LA203', name:'Contabilidad Superior', req:['LA103']},
+  {id:'LA204', name:'Matemática Financiera', req:['LA106']},
+  {id:'LA205', name:'Macroeconomía I', req:['LA106']},
+  {id:'LA206', name:'Estadística I', req:['LA105']},
+  {id:'LA207', name:'Derecho Constitucional y Administrativo', req:['LA201']},
+  {id:'LA208', name:'Área Integrada II', req:['LA101','LA102','LA103','LA104','LA106']},
+
+  {id:'OPT02', name:'Créditos para Optativas (2)', req:[]},
+  {id:'LA810', name:'Idioma Inglés (Lectura comprensiva)', req:[], minApproved:13},
+  {id:'LA811', name:'Idioma Portugués (Lectura comprensiva)', req:[], minApproved:13},
+  {id:'LA301', name:'Sistemas Administrativos', req:['LA202']},
+  {id:'LA302', name:'Finanzas Públicas', req:['LA205','LA207']},
+  {id:'LA303', name:'Estadística II', req:['LA206']},
+  {id:'LA304', name:'Administración Estratégica', req:['LA301']},
+  {id:'LA305', name:'Economía Aplicada', req:['LA205']},
+  {id:'LA306', name:'Historia y Recursos Económicos', req:['LA001','LA002','LA205']},
+  {id:'LA307', name:'Derecho Empresario', req:['LA201']},
+
+  {id:'LA401', name:'Psicología y Sociología Organizacional', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
+  {id:'LA402', name:'Investigación Operativa', req:['LA303','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
+  {id:'LA403', name:'Costos para la Toma de Decisiones', req:['LA203','LA204','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
+  {id:'LA404', name:'Análisis de Estados Contables', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
+  {id:'LA405', name:'Comercialización I', req:['LA304','LA402']},
+  {id:'LA406', name:'Formación Tributaria', req:['LA302','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
+  {id:'LA407', name:'Administración Financiera', req:['LA204','LA404']},
+  {id:'LA408', name:'Área Integrada III', req:['LA201','LA203','LA208','LA304','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
+
+  {id:'LA501', name:'Comercialización II', req:['LA405']},
+  {id:'LA502', name:'Administración de Personal', req:['LA401']},
+  {id:'LA503', name:'Derecho Laboral y de la Seguridad Social', req:['LA207','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
+  {id:'LA504', name:'Evaluación de Proyectos', req:['LA305','LA407']},
+  {id:'LA505', name:'Administración de la Producción', req:['LA405']},
+  {id:'LA506', name:'Área Integrada IV', req:['LA405','LA408','LA304','LA407','LA404','LA307','LA305','LA303','LA302','LA406','LA306','LA401','LA301']},
+  {id:'LA507', name:'Dirección y Gestión Empresaria', req:['LA408','LA502']},
+
+  {id:'LA801', name:'Introducción a la Informática (Módulo A)', req:[]},
+  {id:'LA802', name:'Entorno Operativo Gráfico (Módulo B)', req:[]},
+  {id:'LA803', name:'Planilla de Cálculo Básico (Módulo C)', req:[]},
+  {id:'LA805', name:'Procesador de Texto (Módulo E)', req:[]},
+  {id:'LA807', name:'Redes: Internet e Intranet – Seguridad Informática (Módulo G)', req:[]}
+];
+
+const YEARS = [
+  {title:'Nivelación', list:['LA001','LA002']},
+  {title:'1er Año', list:['LA101','LA102','LA103','LA104','LA105','LA106']},
+  {title:'2do Año', list:['LA201','LA202','LA203','LA204','LA205','LA206','LA207','LA208']},
+  {title:'3er Año', list:['OPT02','LA810','LA811','LA301','LA302','LA303','LA304','LA305','LA306','LA307']},
+  {title:'4to Año', list:['LA401','LA402','LA403','LA404','LA405','LA406','LA407','LA408']},
+  {title:'5to Año', list:['LA501','LA502','LA503','LA504','LA505','LA506','LA507']},
+  {title:'Extracurriculares', list:['LA801','LA802','LA803','LA805','LA807']}
+];
+
+/* ---- Estado guardado: objeto { id: state } donde state = 'promocion'|'regular'|'libre'|'none' ---- */
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {};
+    return JSON.parse(raw);
+  }catch(e){ console.error(e); return {}; }
+}
+function saveState(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
+
+let stateMap = loadState(); // ej: { LA101: 'promocion', LA102: 'regular' }
+let lastUnlockedSet = new Set(); // para animar nuevos desbloqueos
+
+/* util */
+function byId(id){ return subjects.find(s=>s.id===id); }
+function isPromocion(id){ return stateMap[id] === 'promocion'; }
+function countPromocion(){ return Object.values(stateMap).filter(v=>v==='promocion').length; }
+function meetsMinApproved(sub){
+  if(!sub.minApproved) return true;
+  return countPromocion() >= sub.minApproved;
+}
+/* decide si la materia está desbloqueada -> solo promocion cuenta */
+function canUnlock(sub){
+  if(!sub) return false;
+  if(sub.minApproved && !meetsMinApproved(sub)) return false;
+  for(const r of (sub.req||[])){
+    if(!isPromocion(r)) return false;
+  }
+  return true;
+}
+function missingText(sub){
+  const parts = [];
+  if(sub.minApproved && !meetsMinApproved(sub)) parts.push(`${sub.minApproved} materias en Promoción (tienes ${countPromocion()})`);
+  for(const r of (sub.req||[])) if(!isPromocion(r)){
+    const s = byId(r);
+    parts.push(s ? s.name : r);
+  }
+  return parts.join('; ');
+}
+
+/* render y animaciones */
+function render(filterText=''){
+  // limpiar
+  for(let i=0;i<YEARS.length;i++) document.getElementById('grid'+i).innerHTML='';
+
+  // calcular unlocks ahora
+  const unlockedNow = new Set();
+  for(const s of subjects) if(canUnlock(s)) unlockedNow.add(s.id);
+
+  // detectar nuevos unlocks
+  const newUnlocks = [];
+  for(const id of unlockedNow) if(!lastUnlockedSet.has(id)) newUnlocks.push(id);
+
+  YEARS.forEach((year, idx) => {
+    const grid = document.getElementById('grid'+idx);
+    year.list.forEach(id=>{
+      const s = byId(id);
+      const name = s ? s.name : id;
+      if(filterText && !name.toLowerCase().includes(filterText.toLowerCase())) return;
+
+      const unlocked = s ? canUnlock(s) : true;
+      const st = stateMap[id] || 'none';
+      const approved = st === 'promocion';
+      const el = document.createElement('div');
+      el.className = 'subject' + (approved ? ' approved' : '') + (unlocked ? '' : ' locked');
+      el.setAttribute('data-id', id);
+
+      const left = document.createElement('div'); left.className='left';
+      const nameDiv = document.createElement('div'); nameDiv.className='name'; nameDiv.textContent = name;
+      left.appendChild(nameDiv);
+
+      // badge estado pequeño (click abre opción para elegir estado)
+      const badge = document.createElement('button');
+      badge.className = 'badge-state';
+      badge.textContent = (st==='promocion' ? 'Promoción' : (st==='regular' ? 'Regular' : (st==='libre' ? 'Libre' : 'Estado')));
+      if(st==='promocion') badge.classList.add('badge-prom');
+      else if(st==='regular') badge.classList.add('badge-reg');
+      else if(st==='libre') badge.classList.add('badge-lib');
+
+      // badge click: elegir estado mediante prompt simple (UI minimal)
+      badge.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const choice = prompt('Estado: escribe PROMO (Promoción), REG (Regular), LIB (Libre) o N para Ninguno.\nPromoción desbloquea correlativas; Regular/Libre son informativos.', 'PROMO/REG/LIB/N');
+        if(!choice) return;
+        const c = choice.trim().toUpperCase();
+        if(c.startsWith('PROMO')){
+          stateMap[id] = 'promocion';
+        } else if(c.startsWith('REG')){
+          stateMap[id] = 'regular';
+        } else if(c.startsWith('LIB')){
+          stateMap[id] = 'libre';
+        } else {
+          delete stateMap[id];
+        }
+        saveState(stateMap);
+        render(document.getElementById('searchInput').value.trim());
+      });
+
+      left.appendChild(badge);
+
+      const meta = document.createElement('div'); meta.className='meta';
+      meta.textContent = (approved ? 'Promoción' : (unlocked ? 'Disponible' : 'Bloqueada'));
+
+      el.appendChild(left);
+      el.appendChild(meta);
+
+      // tooltip
+      if(!unlocked && s){
+        const tip = document.createElement('div'); tip.className='tooltip';
+        tip.innerHTML = `<b>Requisitos faltantes</b><div style="color:#8b2540">${missingText(s)}</div>`;
+        el.appendChild(tip);
+      }
+
+      // click izquierdo: toggle promocion (aprobada) inmediatamente if unlocked OR force with ctrl/meta
+      el.addEventListener('click', (ev)=>{
+        const force = ev.ctrlKey || ev.metaKey;
+        if(!force && !unlocked) return;
+        if(stateMap[id] === 'promocion') delete stateMap[id];
+        else stateMap[id] = 'promocion';
+        saveState(stateMap);
+        render(document.getElementById('searchInput').value.trim());
+      });
+
+      // keyboard enter toggles promoción if unlocked
+      el.tabIndex = 0;
+      el.addEventListener('keydown', (ev)=>{
+        if(ev.key === 'Enter'){
+          if(canUnlock(s)){
+            if(stateMap[id] === 'promocion') delete stateMap[id]; else stateMap[id] = 'promocion';
+            saveState(stateMap);
+            render(document.getElementById('searchInput').value.trim());
+          }
+        }
+      });
+
+      grid.appendChild(el);
+    });
+  });
+
+  // actualizar resumen y contador visible
+  const promocionCount = countPromocion();
+  document.getElementById('statusSummary').textContent = `${promocionCount} materias en Promoción`;
+  document.getElementById('filterCount').textContent = document.querySelectorAll('.subject').length;
+
+  // animar nuevos desbloqueos (pop)
+  const unlockedAfter = new Set();
+  for(const s of subjects) if(canUnlock(s)) unlockedAfter.add(s.id);
+
+  newUnlocks.forEach(id=>{
+    if(unlockedAfter.has(id)){
+      const el = document.querySelector(`[data-id="${id}"]`);
+      if(el && !el.classList.contains('locked') && !(stateMap[id] === 'promocion')){
+        el.classList.add('pop');
+        el.addEventListener('animationend', ()=> el.classList.remove('pop'), {once:true});
+        // también hacer parpadeo en la mascotita (pequeña interacción)
+        const mascot = document.getElementById('mascot');
+        if(mascot){
+          mascot.style.transform = 'scale(1.06)';
+          setTimeout(()=> mascot.style.transform = '', 350);
+        }
+      }
+    }
+  });
+
+  lastUnlockedSet = unlockedAfter;
+}
+
+/* helpers de estado */
+function countPromocion(){
+  return Object.values(stateMap).filter(v=>v==='promocion').length;
+}
+
+/* persistencia (export/import/reset) */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const payload = { exportedAt: new Date().toISOString(), states: stateMap };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'malla_states_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+document.getElementById('importFile').addEventListener('change', (ev)=>{
+  const f = ev.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const data = JSON.parse(r.result);
+      let incoming = {};
+      if(data && typeof data === 'object'){
+        if(data.states && typeof data.states === 'object') incoming = data.states;
+        else if(data.approved && Array.isArray(data.approved)){
+          // backward compatibility: array of ids -> mark them as promocion
+          data.approved.forEach(id=> incoming[id] = 'promocion');
+        } else if(Array.isArray(data)) {
+          data.forEach(id=> incoming[id] = 'promocion');
+        } else {
+          throw new Error('Formato JSON inválido.');
+        }
+      }
+      if(!confirm(`Importar ${Object.keys(incoming).length} estados. Reemplaza el progreso actual?`)) return;
+      stateMap = incoming;
+      saveState(stateMap);
+      render(document.getElementById('searchInput').value.trim());
+      alert('Importación exitosa.');
+    }catch(err){ alert('Error al importar JSON: ' + err.message); }
+    ev.target.value = '';
+  };
+  r.readAsText(f);
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('Reiniciar todo el progreso guardado?')) return;
+  stateMap = {};
+  saveState(stateMap);
+  render(document.getElementById('searchInput').value.trim());
+});
+
+/* buscador en tiempo real */
+document.getElementById('searchInput').addEventListener('input', (ev)=>{
+  render(ev.target.value.trim());
+});
+
+/* init */
+(function init(){
+  // asegurarnos lastUnlockedSet inicial
+  const initSet = new Set();
+  for(const s of subjects) if(canUnlock(s)) initSet.add(s.id);
+  lastUnlockedSet = initSet;
+  document.addEventListener('DOMContentLoaded', ()=> render(''));
+})();
+
+/* sincronizar entre pestañas */
+window.addEventListener('storage', (e)=>{
+  if(e.key === STORAGE_KEY){
+    try{ stateMap = JSON.parse(e.newValue || '{}'); }catch(e){}
+    render(document.getElementById('searchInput').value.trim());
+  }
+});
+
+/* interacción mascotita: click para saludar (pequeña animación y texto temporal) */
+const mascot = document.getElementById('mascot');
+if(mascot){
+  mascot.addEventListener('click', ()=>{
+    const bubble = mascot.querySelector('.bubble');
+    const old = bubble.textContent;
+    bubble.textContent = '¡Miau! 🐾';
+    bubble.style.transform = 'translateY(0)';
+    bubble.style.opacity = '1';
+    setTimeout(()=> { bubble.textContent = old; }, 1200);
+    mascot.style.transform = 'scale(1.06)';
+    setTimeout(()=> mascot.style.transform = '', 400);
+  });
+}
+</script>
+</body>
+</html>
