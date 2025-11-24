@@ -128,21 +128,74 @@ const estados = ["Promoción", "Regular", "Libre", "Disponible"];
 
 const materias = [
   {
-    ciclo:"Ciclo de Nivelación",
-    materias:[
-      {nombre:"Área Matemática", req:[]},
-      {nombre:"Área Integrada I", req:[]}
+    ciclo: "Ciclo de Nivelación",
+    materias: [
+      { nombre: "Área Matemática", req: [] },
+      { nombre: "Área Integrada I", req: [] }
     ]
   },
   {
-    ciclo:"Primer Año",
-    materias:[
-      {nombre:"Problemática Filosófica y Met. de las Ciencias", req:["Área Integrada I"]},
-      {nombre:"Álgebra", req:["Área Matemática"]},
-      {nombre:"Contabilidad Básica", req:["Área Integrada I"]},
-      {nombre:"Principios de Administración y Organización", req:["Área Integrada I"]},
-      {nombre:"Análisis Matemático", req:["Álgebra"]},
-      {nombre:"Microeconomía I", req:["Álgebra"]}
+    ciclo: "Primer Año",
+    materias: [
+      { nombre: "Problemática Filosófica y Met. de las Ciencias", req: ["Área Integrada I"] },
+      { nombre: "Álgebra", req: ["Área Matemática"] },
+      { nombre: "Contabilidad Básica", req: ["Área Integrada I"] },
+      { nombre: "Principios de Administración y Organización", req: ["Área Integrada I"] },
+      { nombre: "Análisis Matemático", req: ["Álgebra"] },
+      { nombre: "Microeconomía I", req: ["Álgebra"] }
+    ]
+  },
+  {
+    ciclo: "Segundo Año",
+    materias: [
+      { nombre: "Derecho Privado I", req: ["Área Integrada I", "Área Matemática"] },
+      { nombre: "Administración", req: ["Principios de Administración y Organización"] },
+      { nombre: "Contabilidad Superior", req: ["Contabilidad Básica"] },
+      { nombre: "Matemática Financiera", req: ["Microeconomía I"] },
+      { nombre: "Macroeconomía I", req: ["Microeconomía I"] },
+      { nombre: "Estadística I", req: ["Análisis Matemático"] },
+      { nombre: "Derecho Constitucional y Administrativo", req: ["Derecho Privado I"] },
+      { nombre: "Área Integrada II", req: ["Principios de Administración y Organización", "Contabilidad Básica", "Álgebra", "Problemática Filosófica y Met. de las Ciencias", "Microeconomía I"] }
+    ]
+  },
+  {
+    ciclo: "Tercer Año",
+    materias: [
+      { nombre: "Créditos para Optativas (2)", req: [] },
+      { nombre: "Idioma Inglés (Lectura comprensiva)", req: [] },
+      { nombre: "Idioma Portugués (Lectura comprensiva)", req: [] },
+      { nombre: "Sistemas Administrativos", req: ["Administración"] },
+      { nombre: "Finanzas Públicas", req: ["Macroeconomía I", "Derecho Constitucional y Administrativo"] },
+      { nombre: "Estadística II", req: ["Estadística I"] },
+      { nombre: "Administración Estratégica", req: ["Sistemas Administrativos"] },
+      { nombre: "Economía Aplicada", req: ["Macroeconomía I"] },
+      { nombre: "Historia y Recursos Económicos", req: ["Área Matemática", "Área Integrada I", "Macroeconomía I"] },
+      { nombre: "Derecho Empresario", req: ["Derecho Privado I"] }
+    ]
+  },
+  {
+    ciclo: "Cuarto Año",
+    materias: [
+      { nombre: "Psicología y Sociología Organizacional", req: ["Área Integrada II"] },
+      { nombre: "Investigación Operativa", req: ["Estadística II"] },
+      { nombre: "Costos para la Toma de Decisiones", req: ["Contabilidad Superior", "Matemática Financiera"] },
+      { nombre: "Análisis de Estados Contables", req: ["Área Integrada II"] },
+      { nombre: "Comercialización I", req: ["Administración Estratégica", "Investigación Operativa"] },
+      { nombre: "Formación Tributaria", req: ["Finanzas Públicas"] },
+      { nombre: "Administración Financiera", req: ["Matemática Financiera", "Análisis de Estados Contables"] },
+      { nombre: "Área Integrada III", req: ["Derecho Privado I", "Contabilidad Superior", "Área Integrada II", "Administración Estratégica"] }
+    ]
+  },
+  {
+    ciclo: "Quinto Año",
+    materias: [
+      { nombre: "Comercialización II", req: ["Comercialización I"] },
+      { nombre: "Administración de Personal", req: ["Psicología y Sociología Organizacional"] },
+      { nombre: "Derecho Laboral y de la Seguridad Social", req: ["Derecho Constitucional y Administrativo"] },
+      { nombre: "Evaluación de Proyectos", req: ["Economía Aplicada", "Administración Financiera"] },
+      { nombre: "Administración de la Producción", req: ["Comercialización I"] },
+      { nombre: "Área Integrada IV", req: ["Comercialización I", "Área Integrada III", "Administración Estratégica", "Administración Financiera", "Análisis de Estados Contables", "Derecho Empresario", "Economía Aplicada", "Estadística II", "Finanzas Públicas", "Formación Tributaria", "Historia y Recursos Económicos", "Psicología y Sociología Organizacional", "Sistemas Administrativos"] },
+      { nombre: "Dirección y Gestión Empresaria", req: ["Área Integrada III", "Administración de Personal"] }
     ]
   }
 ];
