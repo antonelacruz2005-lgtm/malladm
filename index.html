@@ -11,9 +11,10 @@
             --bg-color: #f7d7e3;
             --primary-color: #e35a7a;
             --secondary-color: #87254c;
-            --promocion-color: #79a838;
-            --regular-color: #fce205;
-            --libre-color: #a76f8e;
+            /* Colores de Estado */
+            --promocion-color: #79a838;  /* VERDE: Aprobada */
+            --regular-color: #fce205;    /* AMARILLO: Regular */
+            --libre-color: #d11c1c;      /* ROJO: Libre */
             --window-bg: #e0e0e0;
         }
 
@@ -61,7 +62,7 @@
         .progress-container {
             margin-bottom: 25px;
             padding: 10px;
-            background-color: #c7c7c7; /* Gris claro de fondo de barra */
+            background-color: #c7c7c7;
             border: 2px solid #5a5a5a;
             box-shadow: 2px 2px 0 0 #5a5a5a;
             position: relative;
@@ -70,7 +71,7 @@
 
         .progress-bar {
             height: 12px;
-            background-color: var(--promocion-color); /* Verde de Promoción */
+            background-color: var(--promocion-color);
             transition: width 0.5s ease-out;
             border: 1px solid #333;
             box-sizing: border-box;
@@ -154,13 +155,11 @@
             font-size: 1em;
         }
 
-        /* Materias (Botones Pixel) */
+        /* Materias (Tarjetas) */
         .materia {
             margin-bottom: 8px;
             padding: 6px 8px;
             border-radius: 0;
-            cursor: pointer;
-            position: relative;
             user-select: none;
             font-size: 0.8em;
             line-height: 1.2;
@@ -171,6 +170,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            background-color: var(--bg-color); /* Fondo base rosa pálido */
         }
 
         .materia:hover {
@@ -186,15 +186,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .estado {
-            font-size: 0.7em;
-            padding: 1px 3px;
-            border: 1px solid;
-            font-weight: bold;
-            display: inline-block;
-            line-height: 1;
-        }
         
         /* Campo de Nota */
         .nota-input {
@@ -205,49 +196,66 @@
             background-color: #fff;
             font-size: 0.7em;
             margin-left: 5px;
-        }
-        
-        /* Estados de la Materia Pixel */
-        .libre {
-            background-color: #f7d7e3;
-            color: #4C4C4C;
-            border-color: var(--libre-color);
-        }
-        .libre .estado {
-            background-color: var(--libre-color);
-            color: #fff;
-            border-color: #fff;
+            pointer-events: auto;
         }
 
-        .regular {
-            background-color: #fffdc7;
-            color: #4C4C4C;
-            border-color: var(--regular-color);
-        }
-        .regular .estado {
-            background-color: var(--regular-color);
-            color: #000;
-            border-color: #000;
+        /* Selector de Estado (Pixel Art) */
+        .estado-selector {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding: 2px 5px;
+            border: 1px solid #333;
+            font-size: 0.7em;
+            font-family: monospace;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 5px;
+            width: 100%;
+            text-align: center;
+            height: 25px;
+            line-height: 1;
         }
 
+        /* --- Estilos para los 3 Estados (Aplicados al fondo de la materia) --- */
         .promocion {
-            background-color: #d8f5b8;
-            color: #4C4C4C;
-            border-color: var(--promocion-color);
-            /* Quitamos pointer-events para permitir clic en la nota, pero manejamos el clic principal en JS */
+            border-color: var(--promocion-color) !important;
+            background-color: #e6f7e4; /* Verde muy claro */
+            color: #1a4f13;
         }
-        .promocion .estado {
-            background-color: var(--promocion-color);
-            color: #fff;
-            border-color: #fff;
+        .regular {
+            border-color: var(--regular-color) !important;
+            background-color: #fffde7; /* Amarillo muy claro */
+            color: #7a5c00;
         }
+        .libre {
+            border-color: var(--libre-color) !important;
+            background-color: #ffe8e8; /* Rojo muy claro */
+            color: #6d0000;
+        }
+        /* Color del selector de estado basado en el estado */
+        .estado-selector.libre { background-color: var(--libre-color); color: #fff; border-color: #880000; }
+        .estado-selector.regular { background-color: var(--regular-color); color: #000; border-color: #d1b400; }
+        .estado-selector.promocion { background-color: var(--promocion-color); color: #fff; border-color: #3f681a; }
         
-        .bloqueada {
-            opacity: 0.4;
-            cursor: not-allowed !important;
+        /* Indicadores visuales */
+        .materia.disabled {
+             opacity: 0.5;
         }
 
-        /* Resaltado de Dependencia (Correlativas Futuras) */
+        /* Materias CASI DISPONIBLES */
+        .casi-disponible {
+            opacity: 1 !important;
+            border: 3px solid #ff00ff !important;
+            animation: pulse-border 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-border {
+            from { box-shadow: 0 0 0 0 rgba(255, 0, 255, 0.7); }
+            to { box-shadow: 0 0 5px 3px rgba(255, 0, 255, 0.4); }
+        }
+
+        /* Resaltado de Dependencia */
         .dependencia-futura {
             border: 3px solid #0000ff !important;
             box-shadow: 4px 4px 0 0 #0000ff !important;
@@ -259,10 +267,10 @@
             border-color: #ff00ff !important;
             box-shadow: 0 0 10px #ff00ff !important;
             opacity: 1;
-            order: -1; /* Mover arriba en la columna */
+            order: -1;
         }
-
-        /* Tooltip (Requisitos Pendientes) Pixel Art */
+        
+        /* Tooltip (Requisitos) */
         .materia .tooltip-text {
             visibility: hidden;
             background-color: #000;
@@ -320,7 +328,7 @@
             animation: blink 4s infinite step-end;
         }
 
-        /* --- Animación de Hojas de Cerezo Pixel Art --- */
+        /* Animación de Hojas de Cerezo */
         @keyframes fall {
             0% { transform: translate(0, -100px) rotate(0deg); opacity: 1; }
             100% { transform: translate(var(--fall-x, 20px), 100vh) rotate(var(--fall-rot, 720deg)); opacity: 0; }
@@ -454,9 +462,15 @@
         5: ["COMERCIALIZACIÓN II", "ADMINISTRACION DE PERSONAL", "DERECHO LABORAL Y DE LA SEGURIDAD SOCIAL", "EVALUACIÓN DE PROYECTOS", "ADMINISTRACIÓN DE LA PRODUCCIÓN", "DIRECCIÓN Y GESTIÓN EMPRESARIAL"]
     };
 
-    const STORAGE_KEY = 'lae_malla_progreso_pixel';
+    const STATUS_MAP = {
+        'libre': 'LIBRE',
+        'regular': 'REGULAR',
+        'promocion': 'PROMOCIÓN'
+    };
 
-    // --- Funciones de Persistencia y Lógica de Correlatividad ---
+    const STORAGE_KEY = 'lae_malla_progreso_pixel_final';
+
+    // --- Funciones de Persistencia ---
 
     function loadProgress() {
         const savedProgress = localStorage.getItem(STORAGE_KEY);
@@ -464,7 +478,6 @@
             const progress = JSON.parse(savedProgress);
             for (const materia in progress) {
                 if (CORRELATIVIDADES[materia]) {
-                    // Carga status y note
                     CORRELATIVIDADES[materia].status = progress[materia].status || 'libre';
                     CORRELATIVIDADES[materia].note = progress[materia].note || '';
                 }
@@ -483,10 +496,17 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
     }
 
-    function isAvailable(materiaName) {
+    // --- Lógica de Correlatividad ---
+
+    function getPendingRequirementCount(materiaName) {
         const requirements = CORRELATIVIDADES[materiaName].prerequisites;
-        if (requirements.length === 0) return true;
-        return requirements.every(req => CORRELATIVIDADES[req] && CORRELATIVIDADES[req].status === 'promocion');
+        if (requirements.length === 0) return 0;
+
+        return requirements.filter(req => CORRELATIVIDADES[req] && CORRELATIVIDADES[req].status !== 'promocion').length;
+    }
+
+    function isAvailable(materiaName) {
+        return getPendingRequirementCount(materiaName) === 0;
     }
 
     function getPendingRequirements(materiaName) {
@@ -535,20 +555,16 @@
         const materias = document.querySelectorAll('.materia');
         
         materias.forEach(materiaEl => {
-            const materiaName = materiaEl.querySelector('.materia-title').textContent.toUpperCase();
+            const materiaName = materiaEl.querySelector('.materia-title').childNodes[0].textContent.toUpperCase();
             
-            // Eliminar resaltado anterior
             materiaEl.classList.remove('highlight');
             
             if (searchTerm.length > 2 && materiaName.includes(searchTerm)) {
-                // Mostrar y resaltar si coincide
                 materiaEl.style.display = 'flex';
                 materiaEl.classList.add('highlight');
             } else if (searchTerm.length <= 2) {
-                // Mostrar todas si el término es muy corto o vacío
                 materiaEl.style.display = 'flex';
             } else {
-                // Ocultar si no coincide
                 materiaEl.style.display = 'none';
             }
         });
@@ -557,16 +573,13 @@
     // --- Manejo de Notas ---
 
     function handleNoteChange(materiaName, event) {
-        // Detener la propagación del clic para evitar que se ejecute handleMateriaClick
-        event.stopPropagation();
-
         const input = event.target;
         let note = input.value.trim();
         
-        // Validar que sea un número (o vacío) entre 1 y 10
+        // Validación de nota (1-10 o vacío)
         if (note !== "" && (isNaN(note) || note < 1 || note > 10)) {
             alert("Por favor, introduce una nota válida entre 1 y 10.");
-            input.value = CORRELATIVIDADES[materiaName].note; // Vuelve al valor guardado
+            input.value = CORRELATIVIDADES[materiaName].note; 
             return;
         }
 
@@ -574,7 +587,38 @@
         saveProgress();
     }
 
-    // --- Funciones de Renderizado y Eventos ---
+    // --- Manejo de Cambio de Estado ---
+
+    function handleStatusChange(materiaName, event) {
+        const newStatus = event.target.value;
+        const materiaData = CORRELATIVIDADES[materiaName];
+
+        // 1. Regla de Correlatividad: No permitir pasar a PROMOCIÓN si no está disponible.
+        if (newStatus === 'promocion' && !isAvailable(materiaName)) {
+            alert("No puedes promocionar esta materia. Faltan requisitos (Ver Tooltip).");
+            event.target.value = materiaData.status; // Revertir la selección
+            return;
+        }
+
+        // 2. Transición y Animación
+        const oldStatus = materiaData.status;
+        materiaData.status = newStatus;
+
+        if (newStatus === 'promocion' && oldStatus !== 'promocion') {
+            triggerConfetti();
+        }
+
+        // 3. Limpiar nota si se cambia de Promoción a otro estado
+        if (oldStatus === 'promocion' && newStatus !== 'promocion') {
+            materiaData.note = '';
+        }
+        
+        // 4. Guardar y Renderizar
+        saveProgress();
+        renderMalla(); 
+    }
+    
+    // --- Funciones de Animación y Utilidad ---
 
     function toggleDependencyHighlight(materiaName, highlight) {
         const dependents = getDependentMaterias(materiaName);
@@ -608,7 +652,6 @@
 
         for (let i = 0; i < numPieces; i++) {
             const piece = document.createElement('div');
-            // ... (código de animación de confeti) ...
             piece.className = 'piece';
             piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             piece.style.left = `${Math.random() * 100}vw`;
@@ -623,36 +666,7 @@
     }
 
 
-    function handleMateriaClick(materiaName) {
-        const materiaData = CORRELATIVIDADES[materiaName];
-
-        // Permitimos el clic solo si es regular/libre Y está disponible
-        if (!isAvailable(materiaName) || materiaData.status === 'promocion') {
-             // Si está bloqueada o ya aprobada, no hace nada
-            return;
-        }
-
-        // Marcar como Aprobada (Promoción)
-        materiaData.status = 'promocion';
-        
-        // Pide la nota si no existe
-        if (!materiaData.note) {
-            let userNote = prompt(`Materia Aprobada: ${materiaName}\nIngresa la nota (1-10):`);
-            if (userNote !== null) {
-                userNote = userNote.trim();
-                if (userNote !== "" && !isNaN(userNote) && userNote >= 1 && userNote <= 10) {
-                    materiaData.note = userNote;
-                } else {
-                    alert("Nota no válida. Se marcará como aprobada sin nota.");
-                }
-            }
-        }
-
-        triggerConfetti();
-        renderMalla();
-        saveProgress();
-    }
-
+    // --- Función Principal de Renderizado ---
 
     function renderMalla() {
         for (let year = 1; year <= 5; year++) {
@@ -666,43 +680,57 @@
                 const materiaData = CORRELATIVIDADES[materiaName];
                 if (!materiaData) return;
 
-                const available = isAvailable(materiaName);
+                const pendingCount = getPendingRequirementCount(materiaName);
+                const available = pendingCount === 0;
                 const pendingReqs = getPendingRequirements(materiaName);
+                const isPromocion = materiaData.status === 'promocion';
                 
-                let materiaStatus = materiaData.status;
-
-                if (materiaStatus !== 'promocion') {
-                    materiaStatus = available ? 'regular' : 'libre';
+                // Clases de estilo
+                let materiaClasses = materiaData.status;
+                if (!available && !isPromocion) {
+                    materiaClasses += ' disabled';
+                }
+                if (pendingCount === 1) {
+                    materiaClasses += ' casi-disponible';
                 }
 
                 const materiaEl = document.createElement('div');
-                materiaEl.className = `materia ${materiaStatus} ${!available && materiaStatus !== 'promocion' ? 'bloqueada' : ''}`;
+                materiaEl.className = `materia ${materiaClasses}`;
                 materiaEl.id = `materia-${materiaName.replace(/\s/g, '_')}`;
+                
+                // Generar el desplegable de estado
+                let statusOptions = '';
+                for (const key in STATUS_MAP) {
+                    statusOptions += `<option value="${key}">${STATUS_MAP[key]}</option>`;
+                }
                 
                 materiaEl.innerHTML = `
                     <span class="materia-title">
                         ${materiaName}
-                        ${materiaStatus === 'promocion' ? 
+                        ${isPromocion ? 
                             `<input type="number" min="1" max="10" step="1" 
                                 class="nota-input" 
                                 value="${materiaData.note}" 
                                 placeholder="Nota" 
-                                onclick="event.stopPropagation()" 
                                 onchange="handleNoteChange('${materiaName}', event)">` 
                             : ''
                         }
                     </span>
-                    <span class="estado">${materiaStatus.toUpperCase()}</span>
+                    <select class="estado-selector ${materiaData.status}" 
+                        onchange="handleStatusChange('${materiaName}', event)">
+                        ${statusOptions}
+                    </select>
                     ${!available ? `<span class="tooltip-text"><pre>🚨 ${pendingReqs}</pre></span>` : ''}
                 `;
+
+                // Seleccionar el estado actual en el desplegable
+                materiaEl.querySelector('.estado-selector').value = materiaData.status;
+
 
                 // Eventos de resaltado de dependencias
                 materiaEl.addEventListener('mouseover', () => toggleDependencyHighlight(materiaName, true));
                 materiaEl.addEventListener('mouseout', () => toggleDependencyHighlight(materiaName, false));
                 
-                // Evento de clic principal (para aprobar)
-                materiaEl.addEventListener('click', () => handleMateriaClick(materiaName));
-
                 cicloEl.appendChild(materiaEl);
             });
         }
