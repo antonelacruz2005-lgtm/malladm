@@ -1,393 +1,748 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Malla Interactiva — Administración de Empresas</title>
-<style>
-  :root{
-    --bg:#FFF6F8; --card:#FFF; --accent:#FDE2E4; --accent-2:#F8C8DC;
-    --text:#2b1720; --muted:#6b5960; --ok:#2aa67a; --warn:#f0b429; --libre:#f28fa1;
-    --shadow:0 10px 30px rgba(37,20,24,0.06); --radius:12px;
-    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
-  }
-  html,body{height:100%;margin:0;padding:20px;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text)}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  h1{font-size:18px;margin:0}
-  .subtitle{color:var(--muted);font-size:13px}
-  .controls{display:flex;gap:8px;align-items:center}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular - Administración de Empresas (Pixel Art)</title>
+    <style>
+        /* Variables y Base Pixel Art */
+        :root {
+            --pixel-size: 4px;
+            --bg-color: #f7d7e3;
+            --primary-color: #e35a7a;
+            --secondary-color: #87254c;
+            --promocion-color: #79a838;
+            --regular-color: #fce205;
+            --libre-color: #a76f8e;
+            --window-bg: #e0e0e0;
+        }
 
-  button{background:var(--accent-2);border:0;padding:8px 12px;border-radius:10px;cursor:pointer;color:#fff}
-  button.ghost{background:transparent;color:var(--text);border:1px solid rgba(0,0,0,0.06);padding:8px 10px}
-  input[type="file"]{display:none}
+        /* Fuerza el renderizado pixelado */
+        * {
+            image-rendering: pixelated;
+        }
 
-  .searchWrap{display:flex;gap:8px;align-items:center;background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:12px}
-  .search{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);min-width:320px}
-  .small{font-size:13px;color:var(--muted)}
+        body {
+            font-family: monospace;
+            background-color: var(--bg-color);
+            color: var(--secondary-color);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-size: 14px;
+        }
 
-  .wrap{display:flex;gap:16px;overflow:auto;padding-bottom:14px}
-  .column{
-    min-width:240px;background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);
-    flex:0 0 260px;
-    position: relative; z-index:1; overflow: visible; /* important: tooltip visibility */
-  }
-  .column h2{margin:0 0 10px 0;font-size:14px;color:#4a2730}
-  .grid{display:flex;flex-direction:column;gap:10px}
+        /* Contenedor principal estilo "Ventana de Juego" */
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: var(--window-bg);
+            border: var(--pixel-size) solid var(--secondary-color);
+            box-shadow: 
+                var(--pixel-size) var(--pixel-size) 0 0 var(--secondary-color),
+                calc(-1 * var(--pixel-size)) calc(-1 * var(--pixel-size)) 0 0 var(--secondary-color);
+            border-radius: 0;
+            position: relative;
+            z-index: 10;
+        }
 
-  .subject{
-    display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;
-    background:linear-gradient(180deg,#fff,#fff);border:1px solid rgba(37,20,24,0.04);
-    transition: transform .14s ease, box-shadow .14s ease, background .18s; position:relative; cursor:pointer;
-  }
-  .subject:hover{ transform: translateY(-4px); box-shadow: 0 12px 28px rgba(37,20,24,0.06); }
-  .subject.locked{ opacity:0.75; filter:grayscale(.02); cursor:default; transform:none; box-shadow:none; }
-  .subject .left{display:flex;align-items:center;gap:10px;min-width:0}
-  .subject .name{ font-weight:700; font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .subject .meta{ font-size:12px; color:var(--muted); min-width:92px; text-align:right; }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--primary-color);
+            font-size: 1.5em;
+            text-shadow: 2px 2px 0 #fff;
+        }
+        
+        /* --- Estilos de la Barra de Progreso Pixel Art --- */
+        .progress-container {
+            margin-bottom: 25px;
+            padding: 10px;
+            background-color: #c7c7c7; /* Gris claro de fondo de barra */
+            border: 2px solid #5a5a5a;
+            box-shadow: 2px 2px 0 0 #5a5a5a;
+            position: relative;
+            font-size: 0.9em;
+        }
 
-  .badge-state{ margin-left:8px;padding:4px 8px;border-radius:999px;font-size:12px;color:white;font-weight:700;cursor:pointer;border:0 }
-  .badge-prom{ background:var(--ok) }
-  .badge-reg{ background:var(--warn); color:#4a2b00 }
-  .badge-lib{ background:var(--libre); color:#4a0b1b }
+        .progress-bar {
+            height: 12px;
+            background-color: var(--promocion-color); /* Verde de Promoción */
+            transition: width 0.5s ease-out;
+            border: 1px solid #333;
+            box-sizing: border-box;
+        }
 
-  .subject.approved{ border-left:6px solid var(--ok); background: linear-gradient(180deg,#fffaf8,#fff) }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+            font-weight: bold;
+            z-index: 1;
+        }
+        
+        /* --- Estilos del Botón de Reinicio Pixel Art --- */
+        .reset-button {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            padding: 5px 10px;
+            background-color: #ff5555;
+            color: #fff;
+            border: 2px solid #880000;
+            box-shadow: 2px 2px 0 0 #880000;
+            cursor: pointer;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            transition: all 0.1s;
+            z-index: 20;
+        }
 
-  .tooltip{
-    position:absolute; left:calc(100% + 12px); top:6px; width:260px;
-    background: linear-gradient(180deg,#ffeef6,#ffdff0); color:#2b0b15; padding:10px; border-radius:10px;
-    font-size:13px; box-shadow:0 10px 30px rgba(37,20,24,0.08); display:none; z-index:999; border:1px solid rgba(0,0,0,0.04)
-  }
-  .tooltip b{display:block;margin-bottom:6px}
-  .subject.locked:hover .tooltip{ display:block }
+        .reset-button:hover {
+            background-color: #ff8888;
+        }
 
-  @keyframes pop {0%{transform:scale(.94);opacity:0}40%{transform:scale(1.10);opacity:1}100%{transform:scale(1);opacity:1}}
-  .pop{animation:pop .38s cubic-bezier(.2,.9,.2,1);box-shadow:0 14px 34px rgba(37,20,24,0.08) !important}
+        .reset-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0 0 0 0 #880000;
+        }
 
-  /* mascotita caminante (pixel walk) */
-  .mascot{
-    position:fixed; left:10px; bottom:40px; width:96px; height:96px; border-radius:8px; overflow:visible; z-index:120;
-    display:flex;align-items:center;justify-content:center; pointer-events:auto;
-  }
-  .mascot img{ width:96px; height:96px; image-rendering: pixelated; display:block; transform-origin:center; transition: transform .18s ease; }
-  /* walk keyframes: move across screen left->right->left */
-  @keyframes walkAcross {
-    0% { transform: translateX(0) scaleX(1); left:6px; }
-    25% { left:25%; transform: translateX(0) scaleX(1); }
-    50% { left:50%; transform: translateX(0) scaleX(-1); }
-    75% { left:75%; transform: translateX(0) scaleX(-1); }
-    100% { left:calc(100% - 120px); transform: translateX(0) scaleX(1); left:6px; } /* returns */
-  }
-  /* We'll control movement via JS for smoother bounce; this is fallback */
-  @media (max-width:900px){ .wrap{padding-bottom:12px} .column{min-width:220px} .tooltip{display:none} .mascot{display:none} }
+        /* --- Estilos del Buscador --- */
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .search-container input {
+            flex-grow: 1;
+            padding: 5px;
+            border: 2px solid var(--secondary-color);
+            background-color: #fff;
+            box-shadow: 2px 2px 0 0 var(--secondary-color);
+            font-family: monospace;
+            font-size: 1em;
+        }
+        
+        /* Malla Grid */
+        .malla-curricular {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
 
-  /* small utilities */
-  .controls .small{min-width:140px;text-align:right}
-</style>
+        .ciclo {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 0;
+            border: 2px dashed #ccc;
+        }
+
+        .ciclo h2 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin: 0 0 10px 0;
+            border-bottom: 1px solid var(--secondary-color);
+            padding-bottom: 5px;
+            font-size: 1em;
+        }
+
+        /* Materias (Botones Pixel) */
+        .materia {
+            margin-bottom: 8px;
+            padding: 6px 8px;
+            border-radius: 0;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            font-size: 0.8em;
+            line-height: 1.2;
+            text-transform: uppercase;
+            border: 2px solid;
+            box-shadow: 2px 2px 0 0 rgba(0,0,0,0.5);
+            transition: all 0.05s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .materia:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0 0 rgba(0,0,0,0.5);
+        }
+
+        .materia-title {
+            flex-grow: 1;
+            margin-bottom: 2px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .estado {
+            font-size: 0.7em;
+            padding: 1px 3px;
+            border: 1px solid;
+            font-weight: bold;
+            display: inline-block;
+            line-height: 1;
+        }
+        
+        /* Campo de Nota */
+        .nota-input {
+            width: 30px;
+            padding: 0;
+            text-align: center;
+            border: 1px solid #333;
+            background-color: #fff;
+            font-size: 0.7em;
+            margin-left: 5px;
+        }
+        
+        /* Estados de la Materia Pixel */
+        .libre {
+            background-color: #f7d7e3;
+            color: #4C4C4C;
+            border-color: var(--libre-color);
+        }
+        .libre .estado {
+            background-color: var(--libre-color);
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .regular {
+            background-color: #fffdc7;
+            color: #4C4C4C;
+            border-color: var(--regular-color);
+        }
+        .regular .estado {
+            background-color: var(--regular-color);
+            color: #000;
+            border-color: #000;
+        }
+
+        .promocion {
+            background-color: #d8f5b8;
+            color: #4C4C4C;
+            border-color: var(--promocion-color);
+            /* Quitamos pointer-events para permitir clic en la nota, pero manejamos el clic principal en JS */
+        }
+        .promocion .estado {
+            background-color: var(--promocion-color);
+            color: #fff;
+            border-color: #fff;
+        }
+        
+        .bloqueada {
+            opacity: 0.4;
+            cursor: not-allowed !important;
+        }
+
+        /* Resaltado de Dependencia (Correlativas Futuras) */
+        .dependencia-futura {
+            border: 3px solid #0000ff !important;
+            box-shadow: 4px 4px 0 0 #0000ff !important;
+            transform: translate(-2px, -2px) scale(1.02);
+        }
+
+        /* Resaltado de búsqueda */
+        .materia.highlight {
+            border-color: #ff00ff !important;
+            box-shadow: 0 0 10px #ff00ff !important;
+            opacity: 1;
+            order: -1; /* Mover arriba en la columna */
+        }
+
+        /* Tooltip (Requisitos Pendientes) Pixel Art */
+        .materia .tooltip-text {
+            visibility: hidden;
+            background-color: #000;
+            color: #fff;
+            text-align: left;
+            border-radius: 0;
+            padding: 4px 6px;
+            position: absolute;
+            z-index: 20;
+            bottom: 100%;
+            left: 0;
+            white-space: normal;
+            min-width: 150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.7em;
+            pointer-events: none;
+            border: 1px solid #fff;
+        }
+
+        .materia:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Gato de Pixel Art con Parpadeo */
+        @keyframes blink {
+            0%, 20%, 40%, 60%, 80%, 100% { 
+                box-shadow: 
+                    0px 0px 0 0 #000, 1px 0px 0 0 #000, 2px 0px 0 0 #000, 3px 0px 0 0 #000, 4px 0px 0 0 #000,
+                    0px 1px 0 0 #000, 1px 1px 0 0 #000, 2px 1px 0 0 #000, 3px 1px 0 0 #000, 4px 1px 0 0 #000,
+                    0px 2px 0 0 #000, 1px 2px 0 0 #000, 2px 2px 0 0 #000, 3px 2px 0 0 #000, 4px 2px 0 0 #000,
+                    1px -1px 0 0 #000, 4px -1px 0 0 #000,
+                    2px 1px 0 0 #ffff00, 3px 1px 0 0 #ffff00;
+            }
+            70%, 75% { 
+                box-shadow: 
+                    0px 0px 0 0 #000, 1px 0px 0 0 #000, 2px 0px 0 0 #000, 3px 0px 0 0 #000, 4px 0px 0 0 #000,
+                    0px 1px 0 0 #000, 1px 1px 0 0 #000, 2px 1px 0 0 #000, 3px 1px 0 0 #000, 4px 1px 0 0 #000,
+                    0px 2px 0 0 #000, 1px 2px 0 0 #000, 2px 2px 0 0 #000, 3px 2px 0 0 #000, 4px 2px 0 0 #000,
+                    1px -1px 0 0 #000, 4px -1px 0 0 #000,
+                    2px 1px 0 0 #000, 3px 1px 0 0 #000;
+            }
+        }
+        
+        .pixel-cat {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            z-index: 10;
+            transform: scale(3);
+            image-rendering: pixelated;
+            animation: blink 4s infinite step-end;
+        }
+
+        /* --- Animación de Hojas de Cerezo Pixel Art --- */
+        @keyframes fall {
+            0% { transform: translate(0, -100px) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--fall-x, 20px), 100vh) rotate(var(--fall-rot, 720deg)); opacity: 0; }
+        }
+
+        @keyframes sway {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(var(--sway-dist, 10px)); }
+            100% { transform: translateX(0); }
+        }
+
+        .leaf-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 8px; 
+            height: 8px;
+            background-color: transparent;
+            box-shadow: 
+                0 0 0 0 #f7b7b7, 1px 0 0 0 #f7b7b7, 2px 0 0 0 #f7b7b7,
+                0 1px 0 0 #f7b7b7, 1px 1px 0 0 #e989a3, 2px 1px 0 0 #f7b7b7,
+                1px 2px 0 0 #e989a3;
+            
+            animation: fall 10s linear infinite, sway 2s ease-in-out infinite alternate;
+            opacity: 0;
+        }
+
+    </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>Malla Interactiva — Administración de Empresas</h1>
-    <div class="subtitle">Progreso local — tema rosa</div>
-  </div>
-  <div class="controls">
-    <div class="small" id="statusSummary">Cargando...</div>
-    <button id="exportBtn">Exportar</button>
-    <label for="importFile" class="ghost" style="padding:8px 10px;border-radius:10px;cursor:pointer">Importar</label>
-    <input type="file" id="importFile" accept="application/json">
-    <button id="resetBtn" class="ghost">Reiniciar</button>
-  </div>
-</header>
 
-<section class="searchWrap">
-  <input id="searchInput" class="search" placeholder="Buscar materia por nombre..." aria-label="Buscar materias">
-  <div class="small" style="min-width:120px;text-align:right">Visibles: <span id="filterCount">—</span></div>
-  <div style="margin-left:8px"><a href="/mnt/data/LAE - RÉGIMEN DE CORRELATIVIDADES.pdf" target="_blank" style="text-decoration:none;color:#b23a6b;font-weight:600">Ver PDF correlatividades</a></div>
-</section>
+<div class="leaf-container" id="leaf-container"></div>
 
-<main>
-  <div class="wrap" id="wrap">
-    <div class="column" id="col0"><h2>Nivelación</h2><div class="grid" id="grid0"></div></div>
-    <div class="column" id="col1"><h2>1er Año</h2><div class="grid" id="grid1"></div></div>
-    <div class="column" id="col2"><h2>2do Año</h2><div class="grid" id="grid2"></div></div>
-    <div class="column" id="col3"><h2>3er Año</h2><div class="grid" id="grid3"></div></div>
-    <div class="column" id="col4"><h2>4to Año</h2><div class="grid" id="grid4"></div></div>
-    <div class="column" id="col5"><h2>5to Año</h2><div class="grid" id="grid5"></div></div>
-    <div class="column" id="col6"><h2>Extracurriculares</h2><div class="grid" id="grid6"></div></div>
-  </div>
-  <div style="margin-top:10px" class="small">Nota: Clic izquierdo marca/desmarca <strong>Promoción</strong> (desbloquea correlativas). Badge lateral permite elegir Promoción/Regular/Libre.</div>
-</main>
+<div class="container">
+    <h1>MALLA CURRICULAR - ADMIN. DE EMPRESAS 💾</h1>
 
-<!-- Mascotita caminante: usa la imagen que subiste en el entorno -->
-<div class="mascot" id="mascot" title="Negro, tu mascota">
-  <img id="mascotImg" src="/mnt/data/cute silly black cat pixel art 🐈_⬛.jpg" alt="Negro">
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+        <div class="progress-text" id="progress-text">0/0 MATERIAS (0%)</div>
+    </div>
+    <button class="reset-button" onclick="resetProgress()">REINICIAR</button>
+
+    <div class="search-container">
+        <label for="materia-search" style="font-size:0.9em;">🔍 BUSCAR:</label>
+        <input type="text" id="materia-search" onkeyup="filterMateria()" placeholder="Escribe el nombre de la materia...">
+    </div>
+
+    <div class="malla-curricular" id="malla">
+        <div class="ciclo" id="year-1">
+            <h2>Nivelación / Primer Año</h2>
+        </div>
+        <div class="ciclo" id="year-2">
+            <h2>Segundo Año</h2>
+        </div>
+        <div class="ciclo" id="year-3">
+            <h2>Tercer Año</h2>
+        </div>
+        <div class="ciclo" id="year-4">
+            <h2>Cuarto Año</h2>
+        </div>
+        <div class="ciclo" id="year-5">
+            <h2>Quinto Año</h2>
+        </div>
+    </div>
+    
+    <div class="pixel-cat"></div>
 </div>
+<div id="confetti-container" class="confetti"></div>
 
 <script>
-/* --- Datos y persistencia --- */
-const STORAGE_KEY = 'malla_interactiva_admin_empresas_v1_states';
+    // --- 1. Definición de la Malla Curricular con Correlatividades ---
+    const CORRELATIVIDADES = {
+        // CURSO DE NIVELACIÓN (Mapeado a year 1 para columna)
+        "ÁREA INTEGRADA": { year: 1, prerequisites: [], status: 'libre', note: '' },
+        "MATEMÁTICAS": { year: 1, prerequisites: [], status: 'libre', note: '' },
+        // PRIMER AÑO
+        "PROBLEMÁTICA FILOSÓFICA Y METODOLOGÍA DE LAS CIENCIAS": { year: 1, prerequisites: ["ÁREA INTEGRADA"], status: 'libre', note: '' },
+        "ALGEBRA": { year: 1, prerequisites: ["MATEMÁTICAS"], status: 'libre', note: '' },
+        "CONTABILIDAD BÁSICA": { year: 1, prerequisites: ["ÁREA INTEGRADA"], status: 'libre', note: '' },
+        "PRINCIPIO DE ADMINISTRACIÓN Y ORGANIZACIÓN": { year: 1, prerequisites: ["ÁREA INTEGRADA"], status: 'libre', note: '' },
+        "ANÁLISIS MATEMÁTICO": { year: 1, prerequisites: ["ALGEBRA"], status: 'libre', note: '' },
+        "MICROECONOMÍA": { year: 1, prerequisites: ["ALGEBRA"], status: 'libre', note: '' },
+        // SEGUNDO AÑO
+        "DERECHO PRIVADO I": { year: 2, prerequisites: ["ÁREA INTEGRADA", "MATEMÁTICAS"], status: 'libre', note: '' },
+        "ADMINISTRACIÓN": { year: 2, prerequisites: ["PRINCIPIO DE ADMINISTRACIÓN Y ORGANIZACIÓN"], status: 'libre', note: '' },
+        "CONTABILIDAD SUPERIOR": { year: 2, prerequisites: ["CONTABILIDAD BÁSICA"], status: 'libre', note: '' },
+        "MACROECONOMÍA I": { year: 2, prerequisites: ["MICROECONOMÍA"], status: 'libre', note: '' },
+        "MATEMÁTICA FINANCIERA": { year: 2, prerequisites: ["MICROECONOMÍA"], status: 'libre', note: '' },
+        "ESTADÍSTICA I": { year: 2, prerequisites: ["ANÁLISIS MATEMÁTICO"], status: 'libre', note: '' },
+        "DERECHO CONSTITUCIONAL Y ADMINISTRATIVO": { year: 2, prerequisites: ["DERECHO PRIVADO I"], status: 'libre', note: '' },
+        "ÁREA INTEGRADA II": { year: 2, prerequisites: ["PROBLEMÁTICA FILOSÓFICA Y METODOLOGÍA DE LAS CIENCIAS", "ALGEBRA", "CONTABILIDAD BÁSICA", "PRINCIPIO DE ADMINISTRACIÓN Y ORGANIZACIÓN", "MICROECONOMÍA"], status: 'libre', note: '' },
+        // TERCER AÑO
+        "SISTEMAS ADMINISTRATIVOS": { year: 3, prerequisites: ["ADMINISTRACIÓN"], status: 'libre', note: '' },
+        "FINANZAS PÚBLICAS": { year: 3, prerequisites: ["MACROECONOMÍA I", "DERECHO CONSTITUCIONAL Y ADMINISTRATIVO"], status: 'libre', note: '' },
+        "ESTADÍSTICA II": { year: 3, prerequisites: ["ESTADÍSTICA I"], status: 'libre', note: '' },
+        "ADMINISTRACION ESTRATEGICA": { year: 3, prerequisites: ["SISTEMAS ADMINISTRATIVOS"], status: 'libre', note: '' },
+        "ECONOMÍA APLICADA": { year: 3, prerequisites: ["MACROECONOMÍA I"], status: 'libre', note: '' },
+        "HISTORIA Y RECURSOS ECONÓMICOS": { year: 3, prerequisites: ["ÁREA INTEGRADA", "MATEMÁTICAS", "MACROECONOMÍA I"], status: 'libre', note: '' },
+        "DERECHO EMPRESARIO": { year: 3, prerequisites: ["DERECHO PRIVADO I"], status: 'libre', note: '' },
+        // CUARTO AÑO
+        "PSICOLOGIA Y SOCIOLOGIA ORGANIZACIONAL": { year: 4, prerequisites: ["ÁREA INTEGRADA II"], status: 'libre', note: '' },
+        "INVESTIGACIÓN OPERATIVA": { year: 4, prerequisites: ["ESTADÍSTICA II"], status: 'libre', note: '' },
+        "COSTOS PARA LA TOMA DE DECISIONES": { year: 4, prerequisites: ["CONTABILIDAD SUPERIOR", "MATEMÁTICA FINANCIERA"], status: 'libre', note: '' },
+        "ANÁLISIS DE ESTADOS CONTABLES": { year: 4, prerequisites: ["ÁREA INTEGRADA II"], status: 'libre', note: '' },
+        "COMERCIALIZACIÓN I": { year: 4, prerequisites: ["ADMINISTRACION ESTRATEGICA", "INVESTIGACIÓN OPERATIVA"], status: 'libre', note: '' },
+        "FORMACIÓN TRIBUTARIA": { year: 4, prerequisites: ["FINANZAS PÚBLICAS"], status: 'libre', note: '' },
+        "ADMINISTRACIÓN FINANCIERA": { year: 4, prerequisites: ["MATEMÁTICA FINANCIERA", "ANÁLISIS DE ESTADOS CONTABLES"], status: 'libre', note: '' },
+        "ÁREA INTEGRADA III": { year: 4, prerequisites: ["DERECHO PRIVADO I", "CONTABILIDAD SUPERIOR", "ÁREA INTEGRADA II", "ADMINISTRACION ESTRATEGICA"], status: 'libre', note: '' },
+        // QUINTO AÑO
+        "COMERCIALIZACIÓN II": { year: 5, prerequisites: ["COMERCIALIZACIÓN I"], status: 'libre', note: '' },
+        "ADMINISTRACION DE PERSONAL": { year: 5, prerequisites: ["PSICOLOGIA Y SOCIOLOGIA ORGANIZACIONAL"], status: 'libre', note: '' },
+        "DERECHO LABORAL Y DE LA SEGURIDAD SOCIAL": { year: 5, prerequisites: ["DERECHO CONSTITUCIONAL Y ADMINISTRATIVO"], status: 'libre', note: '' },
+        "EVALUACIÓN DE PROYECTOS": { year: 5, prerequisites: ["ECONOMÍA APLICADA", "ADMINISTRACIÓN FINANCIERA"], status: 'libre', note: '' },
+        "ADMINISTRACIÓN DE LA PRODUCCIÓN": { year: 5, prerequisites: ["COMERCIALIZACIÓN I"], status: 'libre', note: '' },
+        "DIRECCIÓN Y GESTIÓN EMPRESARIAL": { year: 5, prerequisites: ["ÁREA INTEGRADA III", "ADMINISTRACION DE PERSONAL"], status: 'libre', note: '' },
+    };
 
-/* subjects similar a los previos (IDs internos para correlativas) */
-const subjects = [
-  {id:'LA001', name:'Área Matemática', req:[]},
-  {id:'LA002', name:'Área Integrada I', req:[]},
+    const MATERIAS_POR_AÑO = {
+        1: ["ÁREA INTEGRADA", "MATEMÁTICAS", "PROBLEMÁTICA FILOSÓFICA Y METODOLOGÍA DE LAS CIENCIAS", "ALGEBRA", "CONTABILIDAD BÁSICA", "PRINCIPIO DE ADMINISTRACIÓN Y ORGANIZACIÓN", "ANÁLISIS MATEMÁTICO", "MICROECONOMÍA"],
+        2: ["DERECHO PRIVADO I", "ADMINISTRACIÓN", "CONTABILIDAD SUPERIOR", "MACROECONOMÍA I", "MATEMÁTICA FINANCIERA", "ESTADÍSTICA I", "DERECHO CONSTITUCIONAL Y ADMINISTRATIVO", "ÁREA INTEGRADA II"],
+        3: ["SISTEMAS ADMINISTRATIVOS", "FINANZAS PÚBLICAS", "ESTADÍSTICA II", "ADMINISTRACION ESTRATEGICA", "ECONOMÍA APLICADA", "HISTORIA Y RECURSOS ECONÓMICOS", "DERECHO EMPRESARIO"],
+        4: ["PSICOLOGIA Y SOCIOLOGIA ORGANIZACIONAL", "INVESTIGACIÓN OPERATIVA", "COSTOS PARA LA TOMA DE DECISIONES", "ANÁLISIS DE ESTADOS CONTABLES", "COMERCIALIZACIÓN I", "FORMACIÓN TRIBUTARIA", "ADMINISTRACIÓN FINANCIERA", "ÁREA INTEGRADA III"],
+        5: ["COMERCIALIZACIÓN II", "ADMINISTRACION DE PERSONAL", "DERECHO LABORAL Y DE LA SEGURIDAD SOCIAL", "EVALUACIÓN DE PROYECTOS", "ADMINISTRACIÓN DE LA PRODUCCIÓN", "DIRECCIÓN Y GESTIÓN EMPRESARIAL"]
+    };
 
-  {id:'LA101', name:'Problemática Filosófica y Metodología de las Ciencias', req:['LA002']},
-  {id:'LA102', name:'Álgebra', req:['LA001']},
-  {id:'LA103', name:'Contabilidad Básica', req:['LA002']},
-  {id:'LA104', name:'Principios de Administración y Organización', req:['LA002']},
-  {id:'LA105', name:'Análisis Matemático', req:['LA102']},
-  {id:'LA106', name:'Microeconomía I', req:['LA102']},
+    const STORAGE_KEY = 'lae_malla_progreso_pixel';
 
-  {id:'LA201', name:'Derecho Privado I', req:['LA002','LA001']},
-  {id:'LA202', name:'Administración', req:['LA104']},
-  {id:'LA203', name:'Contabilidad Superior', req:['LA103']},
-  {id:'LA204', name:'Matemática Financiera', req:['LA106']},
-  {id:'LA205', name:'Macroeconomía I', req:['LA106']},
-  {id:'LA206', name:'Estadística I', req:['LA105']},
-  {id:'LA207', name:'Derecho Constitucional y Administrativo', req:['LA201']},
-  {id:'LA208', name:'Área Integrada II', req:['LA101','LA102','LA103','LA104','LA106']},
+    // --- Funciones de Persistencia y Lógica de Correlatividad ---
 
-  {id:'OPT02', name:'Créditos para Optativas (2)', req:[]},
-  {id:'LA810', name:'Idioma Inglés (Lectura comprensiva)', req:[], minApproved:13},
-  {id:'LA811', name:'Idioma Portugués (Lectura comprensiva)', req:[], minApproved:13},
-  {id:'LA301', name:'Sistemas Administrativos', req:['LA202']},
-  {id:'LA302', name:'Finanzas Públicas', req:['LA205','LA207']},
-  {id:'LA303', name:'Estadística II', req:['LA206']},
-  {id:'LA304', name:'Administración Estratégica', req:['LA301']},
-  {id:'LA305', name:'Economía Aplicada', req:['LA205']},
-  {id:'LA306', name:'Historia y Recursos Económicos', req:['LA001','LA002','LA205']},
-  {id:'LA307', name:'Derecho Empresario', req:['LA201']},
-
-  {id:'LA401', name:'Psicología y Sociología Organizacional', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA402', name:'Investigación Operativa', req:['LA303','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA403', name:'Costos para la Toma de Decisiones', req:['LA203','LA204','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA404', name:'Análisis de Estados Contables', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA405', name:'Comercialización I', req:['LA304','LA402']},
-  {id:'LA406', name:'Formación Tributaria', req:['LA302','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA407', name:'Administración Financiera', req:['LA204','LA404']},
-  {id:'LA408', name:'Área Integrada III', req:['LA201','LA203','LA208','LA304','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-
-  {id:'LA501', name:'Comercialización II', req:['LA405']},
-  {id:'LA502', name:'Administración de Personal', req:['LA401']},
-  {id:'LA503', name:'Derecho Laboral y de la Seguridad Social', req:['LA207','LA810','LA811','LA801','LA802','LA803','LA805','LA807']},
-  {id:'LA504', name:'Evaluación de Proyectos', req:['LA305','LA407']},
-  {id:'LA505', name:'Administración de la Producción', req:['LA405']},
-  {id:'LA506', name:'Área Integrada IV', req:['LA405','LA408','LA304','LA407','LA404','LA307','LA305','LA303','LA302','LA406','LA306','LA401','LA301']},
-  {id:'LA507', name:'Dirección y Gestión Empresaria', req:['LA408','LA502']},
-
-  {id:'LA801', name:'Introducción a la Informática (Módulo A)', req:[]},
-  {id:'LA802', name:'Entorno Operativo Gráfico (Módulo B)', req:[]},
-  {id:'LA803', name:'Planilla de Cálculo Básico (Módulo C)', req:[]},
-  {id:'LA805', name:'Procesador de Texto (Módulo E)', req:[]},
-  {id:'LA807', name:'Redes: Internet e Intranet – Seguridad Informática (Módulo G)', req:[]}
-];
-
-const YEARS = [
-  {title:'Nivelación', list:['LA001','LA002']},
-  {title:'1er Año', list:['LA101','LA102','LA103','LA104','LA105','LA106']},
-  {title:'2do Año', list:['LA201','LA202','LA203','LA204','LA205','LA206','LA207','LA208']},
-  {title:'3er Año', list:['OPT02','LA810','LA811','LA301','LA302','LA303','LA304','LA305','LA306','LA307']},
-  {title:'4to Año', list:['LA401','LA402','LA403','LA404','LA405','LA406','LA407','LA408']},
-  {title:'5to Año', list:['LA501','LA502','LA503','LA504','LA505','LA506','LA507']},
-  {title:'Extracurriculares', list:['LA801','LA802','LA803','LA805','LA807']}
-];
-
-/* --- Estado: map id => 'promocion'|'regular'|'libre'|'none' --- */
-function loadState(){
-  try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){return{};}
-}
-function saveState(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
-let stateMap = loadState();
-let lastUnlockedSet = new Set();
-
-/* util */
-function byId(id){ return subjects.find(s=>s.id===id); }
-function isPromocion(id){ return stateMap[id] === 'promocion'; }
-function countPromocion(){ return Object.values(stateMap).filter(v=>v==='promocion').length; }
-function meetsMinApproved(sub){ if(!sub.minApproved) return true; return countPromocion() >= sub.minApproved; }
-function canUnlock(sub){
-  if(!sub) return false;
-  if(sub.minApproved && !meetsMinApproved(sub)) return false;
-  for(const r of (sub.req||[])){
-    if(!isPromocion(r)) return false;
-  }
-  return true;
-}
-function missingText(sub){
-  const parts = [];
-  if(sub.minApproved && !meetsMinApproved(sub)) parts.push(`${sub.minApproved} materias en Promoción (tienes ${countPromocion()})`);
-  for(const r of (sub.req||[])) if(!isPromocion(r)){
-    const s = byId(r);
-    parts.push(s ? s.name : r);
-  }
-  return parts.join('; ');
-}
-
-/* render */
-function render(filterText=''){
-  for(let i=0;i<YEARS.length;i++) document.getElementById('grid'+i).innerHTML='';
-
-  const unlockedNow = new Set();
-  for(const s of subjects) if(canUnlock(s)) unlockedNow.add(s.id);
-  const newUnlocks = [];
-  for(const id of unlockedNow) if(!lastUnlockedSet.has(id)) newUnlocks.push(id);
-
-  YEARS.forEach((year, idx)=>{
-    const grid = document.getElementById('grid'+idx);
-    year.list.forEach(id=>{
-      const s = byId(id); const name = s? s.name : id;
-      if(filterText && !name.toLowerCase().includes(filterText.toLowerCase())) return;
-      const unlocked = s ? canUnlock(s) : true;
-      const st = stateMap[id] || 'none';
-      const approved = st==='promocion';
-      const el = document.createElement('div');
-      el.className = 'subject' + (approved ? ' approved' : '') + (unlocked ? '' : ' locked');
-      el.setAttribute('data-id', id);
-
-      const left = document.createElement('div'); left.className='left';
-      const nameDiv = document.createElement('div'); nameDiv.className='name'; nameDiv.textContent = name;
-      left.appendChild(nameDiv);
-
-      const badge = document.createElement('button'); badge.className='badge-state';
-      badge.textContent = (st==='promocion'?'Promoción':(st==='regular'?'Regular':(st==='libre'?'Libre':'Estado')));
-      if(st==='promocion') badge.classList.add('badge-prom'); else if(st==='regular') badge.classList.add('badge-reg'); else if(st==='libre') badge.classList.add('badge-lib');
-
-      badge.addEventListener('click', (ev)=>{
-        ev.stopPropagation();
-        const choice = prompt('Estado: escribe PROMO (Promoción), REG (Regular), LIB (Libre) o N para Ninguno.','PROMO/REG/LIB/N');
-        if(!choice) return;
-        const c = choice.trim().toUpperCase();
-        if(c.startsWith('PROMO')) stateMap[id] = 'promocion';
-        else if(c.startsWith('REG')) stateMap[id] = 'regular';
-        else if(c.startsWith('LIB')) stateMap[id] = 'libre';
-        else delete stateMap[id];
-        saveState(stateMap);
-        render(document.getElementById('searchInput').value.trim());
-      });
-
-      left.appendChild(badge);
-
-      const meta = document.createElement('div'); meta.className='meta';
-      meta.textContent = (approved ? 'Promoción' : (unlocked ? 'Disponible' : 'Bloqueada'));
-
-      el.appendChild(left); el.appendChild(meta);
-
-      if(!unlocked && s){
-        const tip = document.createElement('div'); tip.className='tooltip';
-        tip.innerHTML = `<b>Requisitos faltantes</b><div style="color:#8b2540">${missingText(s)}</div>`;
-        el.appendChild(tip);
-      }
-
-      el.addEventListener('click', (ev)=>{
-        const force = ev.ctrlKey || ev.metaKey;
-        if(!force && !unlocked) return;
-        if(stateMap[id] === 'promocion') delete stateMap[id]; else stateMap[id] = 'promocion';
-        saveState(stateMap);
-        render(document.getElementById('searchInput').value.trim());
-      });
-
-      el.tabIndex = 0;
-      el.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter'){ if(canUnlock(s)){ if(stateMap[id]==='promocion') delete stateMap[id]; else stateMap[id]='promocion'; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); } } });
-
-      grid.appendChild(el);
-    });
-  });
-
-  const promocionCount = countPromocion();
-  document.getElementById('statusSummary').textContent = `${promocionCount} materias en Promoción`;
-  document.getElementById('filterCount').textContent = document.querySelectorAll('.subject').length;
-
-  // animar nuevos desbloqueos
-  const unlockedAfter = new Set(); for(const s of subjects) if(canUnlock(s)) unlockedAfter.add(s.id);
-  newUnlocks.forEach(id=>{
-    if(unlockedAfter.has(id)){
-      const el = document.querySelector(`[data-id="${id}"]`);
-      if(el && !el.classList.contains('locked') && !(stateMap[id] === 'promocion')){
-        el.classList.add('pop');
-        el.addEventListener('animationend', ()=> el.classList.remove('pop'), {once:true});
-        // mascotita reacciona: step towards center and small hop
-        mascotReact();
-      }
+    function loadProgress() {
+        const savedProgress = localStorage.getItem(STORAGE_KEY);
+        if (savedProgress) {
+            const progress = JSON.parse(savedProgress);
+            for (const materia in progress) {
+                if (CORRELATIVIDADES[materia]) {
+                    // Carga status y note
+                    CORRELATIVIDADES[materia].status = progress[materia].status || 'libre';
+                    CORRELATIVIDADES[materia].note = progress[materia].note || '';
+                }
+            }
+        }
     }
-  });
-  lastUnlockedSet = unlockedAfter;
-}
 
-/* export/import/reset */
-document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const payload = { exportedAt: new Date().toISOString(), states: stateMap };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'malla_states_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-});
-document.getElementById('importFile').addEventListener('change', (ev)=>{
-  const f = ev.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ()=> {
-    try{
-      const data = JSON.parse(r.result);
-      let incoming = {};
-      if(data && typeof data === 'object'){
-        if(data.states && typeof data.states === 'object') incoming = data.states;
-        else if(data.approved && Array.isArray(data.approved)) data.approved.forEach(id=> incoming[id]='promocion');
-        else if(Array.isArray(data)) data.forEach(id=> incoming[id]='promocion');
-        else throw new Error('Formato JSON inválido');
-      }
-      if(!confirm(`Importar ${Object.keys(incoming).length} estados? Reemplaza el progreso actual.`)) return;
-      stateMap = incoming; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); alert('Importación realizada');
-    }catch(err){ alert('Error al importar: '+err.message); }
-    ev.target.value = '';
-  };
-  r.readAsText(f);
-});
-document.getElementById('resetBtn').addEventListener('click', ()=>{ if(!confirm('Reiniciar todo el progreso?')) return; stateMap = {}; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); });
+    function saveProgress() {
+        const progress = {};
+        for (const materia in CORRELATIVIDADES) {
+            progress[materia] = { 
+                status: CORRELATIVIDADES[materia].status,
+                note: CORRELATIVIDADES[materia].note 
+            };
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    }
 
-/* buscador */
-document.getElementById('searchInput').addEventListener('input', (ev)=>{ render(ev.target.value.trim()); });
+    function isAvailable(materiaName) {
+        const requirements = CORRELATIVIDADES[materiaName].prerequisites;
+        if (requirements.length === 0) return true;
+        return requirements.every(req => CORRELATIVIDADES[req] && CORRELATIVIDADES[req].status === 'promocion');
+    }
 
-/* mascotita movement: pixel walk left-right with bounce.
-   We'll move the element smoothly using requestAnimationFrame, flipping image when direction changes.
-*/
-const mascotEl = document.getElementById('mascot');
-const mascotImg = document.getElementById('mascotImg');
-let mascotState = { x: 10, vx: 0.18, dir: 1, width:96, windowW: window.innerWidth };
-function mascotStep(){
-  mascotState.windowW = window.innerWidth;
-  mascotState.x += mascotState.vx * mascotState.dir;
-  // bounce at edges (keep inside 6px.. windowW - width - 6)
-  const minX = 6;
-  const maxX = mascotState.windowW - mascotState.width - 6;
-  if(mascotState.x > maxX){ mascotState.x = maxX; mascotState.dir = -1; mascotImg.style.transform = 'scaleX(-1)'; }
-  if(mascotState.x < minX){ mascotState.x = minX; mascotState.dir = 1; mascotImg.style.transform = 'scaleX(1)'; }
-  mascotEl.style.left = mascotState.x + 'px';
-  requestAnimationFrame(mascotStep);
-}
-window.addEventListener('resize', ()=> { mascotState.windowW = window.innerWidth; });
-requestAnimationFrame(mascotStep);
+    function getPendingRequirements(materiaName) {
+        const requirements = CORRELATIVIDADES[materiaName].prerequisites;
+        if (requirements.length === 0) return "";
+        const pending = requirements.filter(req => CORRELATIVIDADES[req] && CORRELATIVIDADES[req].status !== 'promocion');
+        if (pending.length === 0) return "";
+        
+        return `REQUISITOS PENDIENTES:\n- ${pending.join('\n- ')}`;
+    }
 
-/* mascot reaction: small hop and brief speed-up */
-function mascotReact(){
-  // quick hop
-  mascotImg.style.transition = 'transform .18s ease';
-  const origScale = mascotState.dir === 1 ? 'scaleX(1)' : 'scaleX(-1)';
-  mascotImg.style.transform = origScale + ' translateY(-8px) scale(1.06)';
-  // speed boost
-  const oldV = mascotState.vx;
-  mascotState.vx = oldV * 3.8;
-  setTimeout(()=>{ mascotImg.style.transform = origScale; mascotState.vx = oldV; }, 350);
-}
+    // --- Funciones de Progreso y Reinicio ---
+    
+    function updateProgress() {
+        const totalMaterias = Object.keys(CORRELATIVIDADES).length;
+        let approvedCount = 0;
+        
+        for (const materia in CORRELATIVIDADES) {
+            if (CORRELATIVIDADES[materia].status === 'promocion') {
+                approvedCount++;
+            }
+        }
 
-/* init */
-(function init(){
-  // build initial unlocked set
-  const initSet = new Set();
-  for(const s of subjects) if(canUnlock(s)) initSet.add(s.id);
-  lastUnlockedSet = initSet;
-  document.addEventListener('DOMContentLoaded', ()=> render(''));
-})();
+        const percentage = totalMaterias > 0 ? (approvedCount / totalMaterias) * 100 : 0;
+        
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        
+        if (progressBar && progressText) {
+            progressBar.style.width = `${percentage}%`;
+            progressText.textContent = `${approvedCount}/${totalMaterias} MATERIAS (${Math.round(percentage)}%)`;
+        }
+    }
 
-/* storage sync */
-window.addEventListener('storage', (e)=>{ if(e.key === STORAGE_KEY){ try{ stateMap = JSON.parse(e.newValue||'{}'); }catch(e){} render(document.getElementById('searchInput').value.trim()); } });
+    function resetProgress() {
+        if (confirm("¿Estás seguro de que quieres REINICIAR todo tu progreso? Esta acción es permanente.")) {
+            localStorage.removeItem(STORAGE_KEY);
+            window.location.reload(); 
+        }
+    }
+    
+    // --- Lógica del Buscador (Filtro) ---
+
+    function filterMateria() {
+        const searchTerm = document.getElementById('materia-search').value.toUpperCase();
+        const materias = document.querySelectorAll('.materia');
+        
+        materias.forEach(materiaEl => {
+            const materiaName = materiaEl.querySelector('.materia-title').textContent.toUpperCase();
+            
+            // Eliminar resaltado anterior
+            materiaEl.classList.remove('highlight');
+            
+            if (searchTerm.length > 2 && materiaName.includes(searchTerm)) {
+                // Mostrar y resaltar si coincide
+                materiaEl.style.display = 'flex';
+                materiaEl.classList.add('highlight');
+            } else if (searchTerm.length <= 2) {
+                // Mostrar todas si el término es muy corto o vacío
+                materiaEl.style.display = 'flex';
+            } else {
+                // Ocultar si no coincide
+                materiaEl.style.display = 'none';
+            }
+        });
+    }
+
+    // --- Manejo de Notas ---
+
+    function handleNoteChange(materiaName, event) {
+        // Detener la propagación del clic para evitar que se ejecute handleMateriaClick
+        event.stopPropagation();
+
+        const input = event.target;
+        let note = input.value.trim();
+        
+        // Validar que sea un número (o vacío) entre 1 y 10
+        if (note !== "" && (isNaN(note) || note < 1 || note > 10)) {
+            alert("Por favor, introduce una nota válida entre 1 y 10.");
+            input.value = CORRELATIVIDADES[materiaName].note; // Vuelve al valor guardado
+            return;
+        }
+
+        CORRELATIVIDADES[materiaName].note = note;
+        saveProgress();
+    }
+
+    // --- Funciones de Renderizado y Eventos ---
+
+    function toggleDependencyHighlight(materiaName, highlight) {
+        const dependents = getDependentMaterias(materiaName);
+        dependents.forEach(depName => {
+            const depEl = document.getElementById(`materia-${depName.replace(/\s/g, '_')}`);
+            if (depEl) {
+                if (highlight) {
+                    depEl.classList.add('dependencia-futura');
+                } else {
+                    depEl.classList.remove('dependencia-futura');
+                }
+            }
+        });
+    }
+
+    function getDependentMaterias(materiaName) {
+        const dependents = [];
+        for (const name in CORRELATIVIDADES) {
+            if (CORRELATIVIDADES[name].prerequisites.includes(materiaName)) {
+                dependents.push(name);
+            }
+        }
+        return dependents;
+    }
+
+
+    function triggerConfetti() {
+        const container = document.getElementById('confetti-container');
+        const colors = ['#fff', '#ff00ff', '#ffff00'];
+        const numPieces = 20;
+
+        for (let i = 0; i < numPieces; i++) {
+            const piece = document.createElement('div');
+            // ... (código de animación de confeti) ...
+            piece.className = 'piece';
+            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.left = `${Math.random() * 100}vw`;
+            piece.style.top = `${Math.random() * 80}vh`;
+            piece.style.animationDelay = `${Math.random() * 0.1}s`;
+            container.appendChild(piece);
+        }
+
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 1000);
+    }
+
+
+    function handleMateriaClick(materiaName) {
+        const materiaData = CORRELATIVIDADES[materiaName];
+
+        // Permitimos el clic solo si es regular/libre Y está disponible
+        if (!isAvailable(materiaName) || materiaData.status === 'promocion') {
+             // Si está bloqueada o ya aprobada, no hace nada
+            return;
+        }
+
+        // Marcar como Aprobada (Promoción)
+        materiaData.status = 'promocion';
+        
+        // Pide la nota si no existe
+        if (!materiaData.note) {
+            let userNote = prompt(`Materia Aprobada: ${materiaName}\nIngresa la nota (1-10):`);
+            if (userNote !== null) {
+                userNote = userNote.trim();
+                if (userNote !== "" && !isNaN(userNote) && userNote >= 1 && userNote <= 10) {
+                    materiaData.note = userNote;
+                } else {
+                    alert("Nota no válida. Se marcará como aprobada sin nota.");
+                }
+            }
+        }
+
+        triggerConfetti();
+        renderMalla();
+        saveProgress();
+    }
+
+
+    function renderMalla() {
+        for (let year = 1; year <= 5; year++) {
+            const cicloEl = document.getElementById(`year-${year}`);
+            if (!cicloEl) continue;
+            
+            const titleHtml = cicloEl.querySelector('h2').outerHTML;
+            cicloEl.innerHTML = titleHtml;
+
+            MATERIAS_POR_AÑO[year].forEach(materiaName => {
+                const materiaData = CORRELATIVIDADES[materiaName];
+                if (!materiaData) return;
+
+                const available = isAvailable(materiaName);
+                const pendingReqs = getPendingRequirements(materiaName);
+                
+                let materiaStatus = materiaData.status;
+
+                if (materiaStatus !== 'promocion') {
+                    materiaStatus = available ? 'regular' : 'libre';
+                }
+
+                const materiaEl = document.createElement('div');
+                materiaEl.className = `materia ${materiaStatus} ${!available && materiaStatus !== 'promocion' ? 'bloqueada' : ''}`;
+                materiaEl.id = `materia-${materiaName.replace(/\s/g, '_')}`;
+                
+                materiaEl.innerHTML = `
+                    <span class="materia-title">
+                        ${materiaName}
+                        ${materiaStatus === 'promocion' ? 
+                            `<input type="number" min="1" max="10" step="1" 
+                                class="nota-input" 
+                                value="${materiaData.note}" 
+                                placeholder="Nota" 
+                                onclick="event.stopPropagation()" 
+                                onchange="handleNoteChange('${materiaName}', event)">` 
+                            : ''
+                        }
+                    </span>
+                    <span class="estado">${materiaStatus.toUpperCase()}</span>
+                    ${!available ? `<span class="tooltip-text"><pre>🚨 ${pendingReqs}</pre></span>` : ''}
+                `;
+
+                // Eventos de resaltado de dependencias
+                materiaEl.addEventListener('mouseover', () => toggleDependencyHighlight(materiaName, true));
+                materiaEl.addEventListener('mouseout', () => toggleDependencyHighlight(materiaName, false));
+                
+                // Evento de clic principal (para aprobar)
+                materiaEl.addEventListener('click', () => handleMateriaClick(materiaName));
+
+                cicloEl.appendChild(materiaEl);
+            });
+        }
+        
+        // Actualizar la barra de progreso al finalizar el render
+        updateProgress();
+    }
+
+    // --- Inicialización de la Animación de Hojas ---
+
+    function createFallingLeaves() {
+        const container = document.getElementById('leaf-container');
+        const numLeaves = 30;
+        
+        for (let i = 0; i < numLeaves; i++) {
+            const leaf = document.createElement('div');
+            leaf.className = 'leaf';
+            
+            leaf.style.left = `${Math.random() * 100}vw`;
+            
+            leaf.style.setProperty('--fall-x', `${Math.random() * 50 - 25}px`);
+            leaf.style.setProperty('--fall-rot', `${Math.random() * 1000 + 360}deg`);
+            leaf.style.setProperty('--sway-dist', `${Math.random() * 15 + 5}px`);
+            
+            leaf.style.animationDelay = `${Math.random() * 10}s`;
+            leaf.style.animationDuration = `${7 + Math.random() * 6}s`;
+            leaf.style.opacity = '1';
+            
+            container.appendChild(leaf);
+        }
+    }
+
+    // --- 4. Inicialización Global ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProgress();
+        renderMalla();
+        createFallingLeaves();
+    });
+
 </script>
 </body>
 </html>
