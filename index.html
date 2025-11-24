@@ -87,48 +87,248 @@
 const STORAGE_KEY = 'malla_interactiva_admin_empresas_v1_states';
 const subjects = [
   // Nivelación (Columna 0) - Mapeados como 'LA0'
-  {id:'LA001', name:'MATEMÁTICAS', req:[], year:0}, // MATEMÁTICAS
-  {id:'LA002', name:'ÁREA INTEGRADA I', req:[], year:0}, // ÁREA INTEGRADA
+  {id:'LA001', name:'MATEMÁTICAS', req:[], year:0}, // MATEMÁTICAS [cite: 3]
+  {id:'LA002', name:'ÁREA INTEGRADA I', req:[], year:0}, // ÁREA INTEGRADA [cite: 3]
 
   // Primer Año (Columna 1)
-  {id:'LA101', name:'Problemática Filosófica y Metodología de las Ciencias', req:['LA002'], year:1},
-  {id:'LA102', name:'ÁLGEBRA', req:['LA001'], year:1},
-  {id:'LA103', name:'Contabilidad Básica', req:['LA002'], year:1},
-  {id:'LA104', name:'Principios de Administración y Organización', req:['LA002'], year:1},
-  {id:'LA105', name:'Análisis Matemático', req:['LA102'], year:1},
-  {id:'LA106', name:'Microeconomía I', req:['LA102'], year:1},
+  {id:'LA101', name:'Problemática Filosófica y Metodología de las Ciencias', req:['LA002'], year:1}, [cite: 3]
+  {id:'LA102', name:'ÁLGEBRA', req:['LA001'], year:1}, [cite: 3]
+  {id:'LA103', name:'Contabilidad Básica', req:['LA002'], year:1}, [cite: 3]
+  {id:'LA104', name:'Principios de Administración y Organización', req:['LA002'], year:1}, [cite: 3]
+  {id:'LA105', name:'Análisis Matemático', req:['LA102'], year:1}, [cite: 3]
+  {id:'LA106', name:'Microeconomía I', req:['LA102'], year:1}, [cite: 3]
 
   // Segundo Año (Columna 2)
-  {id:'LA201', name:'Derecho Privado I', req:['LA002','LA001'], year:2},
-  {id:'LA202', name:'Administración', req:['LA104'], year:2},
-  {id:'LA203', name:'Contabilidad Superior', req:['LA103'], year:2},
-  {id:'LA204', name:'Matemática Financiera', req:['LA106'], year:2},
-  {id:'LA205', name:'Macroeconomía I', req:['LA106'], year:2},
-  {id:'LA206', name:'Estadística I', req:['LA105'], year:2},
-  {id:'LA207', name:'Derecho Constitucional y Administrativo', req:['LA201'], year:2},
-  {id:'LA208', name:'Área Integrada II', req:['LA101','LA102','LA103','LA104','LA106'], year:2},
+  {id:'LA201', name:'Derecho Privado I', req:['LA002','LA001'], year:2}, [cite: 3]
+  {id:'LA202', name:'Administración', req:['LA104'], year:2}, [cite: 3]
+  {id:'LA203', name:'Contabilidad Superior', req:['LA103'], year:2}, [cite: 3]
+  {id:'LA204', name:'Matemática Financiera', req:['LA106'], year:2}, [cite: 3]
+  {id:'LA205', name:'Macroeconomía I', req:['LA106'], year:2}, [cite: 3]
+  {id:'LA206', name:'Estadística I', req:['LA105'], year:2}, [cite: 3]
+  {id:'LA207', name:'Derecho Constitucional y Administrativo', req:['LA201'], year:2}, [cite: 3]
+  {id:'LA208', name:'Área Integrada II', req:['LA101','LA102','LA103','LA104','LA106'], year:2}, [cite: 3]
 
   // Tercer Año (Columna 3)
-  {id:'OPT02', name:'Créditos para Optativas (2)', req:[], year:3},
-  {id:'LA301', name:'Sistemas Administrativos', req:['LA202'], year:3},
-  {id:'LA302', name:'Finanzas Públicas', req:['LA205','LA207'], year:3},
-  {id:'LA303', name:'Estadística II', req:['LA206'], year:3},
-  {id:'LA304', name:'Administración Estratégica', req:['LA301'], year:3},
-  {id:'LA305', name:'Economía Aplicada', req:['LA205'], year:3},
-  {id:'LA306', name:'Historia y Recursos Económicos', req:['LA001','LA002','LA205'], year:3},
-  {id:'LA307', name:'Derecho Empresario', req:['LA201'], year:3},
+  {id:'OPT02', name:'Créditos para Optativas (2)', req:[], year:3}, [cite: 7]
+  {id:'LA301', name:'Sistemas Administrativos', req:['LA202'], year:3}, [cite: 7]
+  {id:'LA302', name:'Finanzas Públicas', req:['LA205','LA207'], year:3}, [cite: 7]
+  {id:'LA303', name:'Estadística II', req:['LA206'], year:3}, [cite: 7]
+  {id:'LA304', name:'Administración Estratégica', req:['LA301'], year:3}, [cite: 7]
+  {id:'LA305', name:'Economía Aplicada', req:['LA205'], year:3}, [cite: 7]
+  {id:'LA306', name:'Historia y Recursos Económicos', req:['LA001','LA002','LA205'], year:3}, [cite: 7]
+  {id:'LA307', name:'Derecho Empresario', req:['LA201'], year:3}, [cite: 7]
 
   // Cuarto Año (Columna 4) - Se requiere Inglés/Portugués/Módulos (LA8xx)
-  {id:'LA401', name:'Psicología y Sociología Organizacional', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4},
-  {id:'LA402', name:'Investigación Operativa', req:['LA303','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4},
-  {id:'LA403', name:'Costos para la Toma de Decisiones', req:['LA203','LA204','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4},
-  {id:'LA404', name:'Análisis de Estados Contables', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4},
-  {id:'LA405', name:'Comercialización I', req:['LA304','LA402'], year:4},
-  {id:'LA406', name:'Formación Tributaria', req:['LA302','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4},
-  {id:'LA407', name:'Administración Financiera', req:['LA204','LA404'], year:4},
-  {id:'LA408', name:'Área Integrada III', req:['LA201','LA203','LA208','LA304','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4},
+  {id:'LA401', name:'Psicología y Sociología Organizacional', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4}, [cite: 7]
+  {id:'LA402', name:'Investigación Operativa', req:['LA303','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4}, [cite: 7]
+  {id:'LA403', name:'Costos para la Toma de Decisiones', req:['LA203','LA204','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4}, [cite: 7]
+  {id:'LA404', name:'Análisis de Estados Contables', req:['LA208','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4}, [cite: 7]
+  {id:'LA405', name:'Comercialización I', req:['LA304','LA402'], year:4}, [cite: 7]
+  {id:'LA406', name:'Formación Tributaria', req:['LA302','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4}, [cite: 7]
+  {id:'LA407', name:'Administración Financiera', req:['LA204','LA404'], year:4}, [cite: 7]
+  {id:'LA408', name:'Área Integrada III', req:['LA201','LA203','LA208','LA304','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:4}, [cite: 7]
 
   // Quinto Año (Columna 5)
-  {id:'LA501', name:'Comercialización II', req:['LA405'], year:5},
-  {id:'LA502', name:'Administración de Personal', req:['LA401'], year:5},
-  {id:'LA503', name:'Derecho Laboral y de la Seguridad Social', req
+  {id:'LA501', name:'Comercialización II', req:['LA405'], year:5}, [cite: 7]
+  {id:'LA502', name:'Administración de Personal', req:['LA401'], year:5}, [cite: 7]
+  {id:'LA503', name:'Derecho Laboral y de la Seguridad Social', req:['LA207','LA810','LA811','LA801','LA802','LA803','LA805','LA807'], year:5}, [cite: 7]
+  {id:'LA504', name:'Evaluación de Proyectos', req:['LA305','LA407'], year:5}, [cite: 7]
+  {id:'LA505', name:'Administración de la Producción', req:['LA405'], year:5}, [cite: 7]
+  {id:'LA506', name:'Área Integrada IV', req:['LA405','LA408','LA304','LA407','LA404','LA307','LA305','LA303','LA302','LA406','LA306','LA401','LA301'], year:5}, [cite: 10]
+  {id:'LA507', name:'Dirección y Gestión Empresaria', req:['LA408','LA502'], year:5}, [cite: 10]
+
+  // Requisitos Extracurriculares (Columna 6)
+  {id:'LA810', name:'Inglés Oral y Escrito', req:[], minApproved:13, year:6}, [cite: 10]
+  {id:'LA811', name:'Portugués Oral y Escrito', req:[], minApproved:13, year:6}, [cite: 10]
+  {id:'LA801', name:'Computación y Manejo de Recursos Informáticos', req:['LA002','LA001'], year:6}, [cite: 10]
+  {id:'LA802', name:'Módulo B - Entorno Operativo Gráfico (INCLUIDO EN LA4xx/LA5xx)', req:[], year:6},
+  {id:'LA803', name:'Módulo C - Planilla de Cálculo Básico (INCLUIDO EN LA4xx/LA5xx)', req:[], year:6},
+  {id:'LA805', name:'Módulo E - Procesador de Texto (INCLUIDO EN LA4xx/LA5xx)', req:[], year:6},
+  {id:'LA807', name:'Módulo G - Redes/Seguridad (INCLUIDO EN LA4xx/LA5xx)', req:[], year:6},
+];
+
+const YEARS = [
+  {title:'Nivelación', list:['LA001','LA002']},
+  {title:'1er Año', list:['LA101','LA102','LA103','LA104','LA105','LA106']},
+  {title:'2do Año', list:['LA201','LA202','LA203','LA204','LA205','LA206','LA207','LA208']},
+  {title:'3er Año', list:['OPT02','LA301','LA302','LA303','LA304','LA305','LA306','LA307']},
+  {title:'4to Año', list:['LA401','LA402','LA403','LA404','LA405','LA406','LA407','LA408']},
+  {title:'5to Año', list:['LA501','LA502','LA503','LA504','LA505','LA506','LA507']},
+  {title:'Extracurriculares', list:['LA810','LA811','LA801','LA802','LA803','LA805','LA807']}
+];
+
+/* --- Estado: map id => 'promocion'|'regular'|'libre'|'none' --- */
+let stateMap = loadState();
+let lastUnlockedSet = new Set();
+function loadState(){ try{ const raw = localStorage.getItem(STORAGE_KEY); return raw? JSON.parse(raw): {}; }catch(e){ return {}; } }
+function saveState(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
+function byId(id){ return subjects.find(s=>s.id===id); }
+function isPromocion(id){ return stateMap[id] === 'promocion'; }
+function countPromocion(){ return Object.values(stateMap).filter(v=>v==='promocion').length; }
+function meetsMinApproved(sub){ if(!sub.minApproved) return true; return countPromocion() >= sub.minApproved; }
+function canUnlock(sub){ if(!sub) return false; if(sub.minApproved && !meetsMinApproved(sub)) return false; for(const r of (sub.req||[])) if(!isPromocion(r)) return false; return true; }
+function missingText(sub){ 
+  const parts=[]; 
+  if(sub.minApproved && !meetsMinApproved(sub)) parts.push(`${sub.minApproved} materias en Promoción (tienes ${countPromocion()})`); 
+  for(const r of (sub.req||[])){ 
+    if(!isPromocion(r)){ 
+      const s=byId(r); 
+      parts.push(s?s.name:r); 
+    }
+  } 
+  return parts.join('; '); 
+}
+
+/* render */
+function render(filterText=''){
+  for(let i=0;i<YEARS.length;i++) document.getElementById('grid'+i).innerHTML='';
+  const unlockedNow=new Set(); for(const s of subjects) if(canUnlock(s)) unlockedNow.add(s.id);
+  const newUnlocks=[]; for(const id of unlockedNow) if(!lastUnlockedSet.has(id)) newUnlocks.push(id);
+
+  YEARS.forEach((year, idx)=>{
+    const grid=document.getElementById('grid'+idx);
+    year.list.forEach(id=>{
+      const s=byId(id); 
+      const name=s? s.name:id;
+      
+      if(filterText && !name.toLowerCase().includes(filterText.toLowerCase())) return;
+
+      const unlocked = s ? canUnlock(s) : true;
+      const st = stateMap[id] || 'none';
+      const approved = st==='promocion';
+      
+      const el=document.createElement('div');
+      el.className='subject' + (approved ? ' approved' : '') + (unlocked ? '' : ' locked');
+      el.setAttribute('data-id', id);
+
+      const left=document.createElement('div'); left.className='left';
+      const nameDiv=document.createElement('div'); nameDiv.className='name'; nameDiv.textContent=name;
+      left.appendChild(nameDiv);
+
+      // Badge/Botón para cambiar estado (Promoción/Regular/Libre)
+      const badge=document.createElement('button'); badge.className='badge-state';
+      badge.textContent=(st==='promocion'?'PROMOCIÓN':(st==='regular'?'REGULAR':(st==='libre'?'LIBRE':'ESTADO')));
+      if(st==='promocion') badge.classList.add('badge-prom'); else if(st==='regular') badge.classList.add('badge-reg'); else if(st==='libre') badge.classList.add('badge-lib');
+
+      badge.addEventListener('click',(ev)=>{ 
+        ev.stopPropagation(); 
+        const choice = prompt('Estado: escribe PROMO (Promoción), REG (Regular), LIB (Libre) o N (Ninguno). \n\n*Nota: Para PROMO, todos los requisitos deben estar aprobados.*', 
+            st==='promocion' ? 'PROMO' : st==='regular' ? 'REG' : st==='libre' ? 'LIB' : 'N'
+        ); 
+        if(!choice) return; 
+        
+        const c=choice.trim().toUpperCase(); 
+        
+        let nextState = null;
+        if(c.startsWith('PROMO')) nextState='promocion'; 
+        else if(c.startsWith('REG')) nextState='regular'; 
+        else if(c.startsWith('LIB')) nextState='libre'; 
+        else {
+          delete stateMap[id];
+          nextState = 'none';
+        }
+
+        // Aplicar regla de correlatividad solo para PROMOCIÓN
+        if(nextState === 'promocion' && !unlocked && !approved){
+          alert('¡Imposible! Faltan correlativas para promocionar. Marca los requisitos primero.');
+          return;
+        }
+        
+        if(nextState !== 'none'){
+          stateMap[id] = nextState;
+        }
+        
+        saveState(stateMap); 
+        render(document.getElementById('searchInput').value.trim()); 
+        if(nextState === 'promocion') mascotReact();
+      });
+
+      left.appendChild(badge);
+
+      const meta=document.createElement('div'); meta.className='meta';
+      meta.textContent=(approved ? 'APROBADA' : (unlocked ? 'Disponible' : 'Bloqueada'));
+      el.appendChild(left); el.appendChild(meta);
+
+      if(!unlocked && s){
+        const tip=document.createElement('div'); tip.className='tooltip';
+        tip.innerHTML=`<b>Requisitos faltantes</b><div style="color:#8b2540">${missingText(s)}</div>`;
+        el.appendChild(tip);
+      }
+
+      // Clic principal: Alterna Promoción (si está desbloqueada)
+      el.addEventListener('click',(ev)=>{ 
+        const force = ev.ctrlKey || ev.metaKey; 
+        if(!force && !unlocked && !approved) return; 
+        
+        if(stateMap[id] === 'promocion'){
+          delete stateMap[id]; 
+        } else if(unlocked){
+          stateMap[id]='promocion';
+          mascotReact(); // Reacciona solo al marcar como Promoción
+        } else if(force) {
+          // Permite Promocionar con Ctrl/Cmd si está bloqueada (modo 'override')
+          stateMap[id]='promocion';
+          mascotReact();
+        }
+        
+        saveState(stateMap); 
+        render(document.getElementById('searchInput').value.trim()); 
+      });
+
+      el.tabIndex=0;
+      el.addEventListener('keydown',(ev)=>{ 
+        if(ev.key==='Enter'){ 
+          if(canUnlock(s)){ 
+            if(stateMap[id]==='promocion') delete stateMap[id]; 
+            else stateMap[id]='promocion'; 
+            saveState(stateMap); 
+            render(document.getElementById('searchInput').value.trim()); 
+          } 
+        } 
+      });
+
+      grid.appendChild(el);
+    });
+  });
+
+  const promocionCount = countPromocion();
+  document.getElementById('statusSummary').textContent = `${promocionCount} materias en Promoción`;
+  document.getElementById('filterCount').textContent = document.querySelectorAll('.subject').length;
+
+  const unlockedAfter = new Set(); for(const s of subjects) if(canUnlock(s)) unlockedAfter.add(s.id);
+  newUnlocks.forEach(id=>{ 
+    if(unlockedAfter.has(id)){ 
+      const el=document.querySelector(`[data-id="${id}"]`); 
+      if(el && !el.classList.contains('locked') && !(stateMap[id]==='promocion')){ 
+        el.classList.add('pop'); 
+        el.addEventListener('animationend', ()=> el.classList.remove('pop'), {once:true}); 
+        mascotReact(); 
+      } 
+    } 
+  });
+  lastUnlockedSet = unlockedAfter;
+}
+
+/* export/import/reset */
+document.getElementById('exportBtn').addEventListener('click', ()=>{ const payload={ exportedAt:new Date().toISOString(), states: stateMap }; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='malla_states_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); });
+document.getElementById('importFile').addEventListener('change',(ev)=>{ const f=ev.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ const data=JSON.parse(r.result); let incoming={}; if(data && typeof data==='object'){ if(data.states && typeof data.states==='object') incoming=data.states; else if(data.approved && Array.isArray(data.approved)) data.approved.forEach(id=> incoming[id]='promocion'); else if(Array.isArray(data)) data.forEach(id=> incoming[id]='promocion'); else throw new Error('Formato JSON inválido'); } if(!confirm(`Importar ${Object.keys(incoming).length} estados? Reemplaza el progreso actual.`)) return; stateMap=incoming; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); alert('Importación realizada'); }catch(err){ alert('Error al importar: '+err.message); } ev.target.value=''; }; r.readAsText(f); });
+document.getElementById('resetBtn').addEventListener('click', ()=>{ if(!confirm('Reiniciar todo el progreso?')) return; stateMap={}; saveState(stateMap); render(document.getElementById('searchInput').value.trim()); });
+
+/* buscador */
+document.getElementById('searchInput').addEventListener('input',(ev)=>{ render(ev.target.value.trim()); });
+
+/* mascotita movement */
+const mascotEl = document.getElementById('mascot');
+const mascotImg = document.getElementById('mascotImg');
+let mascotState = { x: 10, vx: 0.18, dir: 1, width:96, windowW: window.innerWidth };
+function mascotStep(){ mascotState.windowW = window.innerWidth; mascotState.x += mascotState.vx * mascotState.dir; const minX=6; const maxX=mascotState.windowW - (mascotState.width*mascotImg.style.transform.match(/scale\(([^)]+)\)/)?.[1] || 2) - 6; if(mascotState.x>maxX){ mascotState.x=maxX; mascotState.dir=-1; mascotImg.style.transform='scaleX(-1)'; } if(mascotState.x<minX){ mascotState.x=minX; mascotState.dir=1; mascotImg.style.transform='scaleX(1)'; } mascotEl.style.left = mascotState.x+'px'; requestAnimationFrame(mascotStep); }
+window.addEventListener('resize', ()=>{ mascotState.windowW = window.innerWidth; });
+requestAnimationFrame(mascotStep);
+function mascotReact(){ mascotImg.style.transition='transform .18s ease'; const origScale = mascotState.dir===1 ? 'scaleX(1)' : 'scaleX(-1)'; mascotImg.style.transform = origScale + ' translateY(-8px) scale(1.06)'; const oldV = mascotState.vx; mascotState.vx = oldV * 3.8; setTimeout(()=>{ mascotImg.style.transform = origScale; mascotState.vx = oldV; }, 350); }
+
+/* init */
+(function init(){ const initSet = new Set(); for(const s of subjects) if(canUnlock(s)) initSet.add(s.id); lastUnlockedSet = initSet; document.addEventListener('DOMContentLoaded', ()=> render('')); })();
+window.addEventListener('storage',(e)=>{ if(e.key===STORAGE_KEY){ try{ stateMap = JSON.parse(e.newValue||'{}'); }catch(e){} render(document.getElementById('searchInput').value.trim()); } });
+</script>
+</body>
+</html>
